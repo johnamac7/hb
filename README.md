@@ -20,7 +20,7 @@ simplify interacting with Healthbot.
   -u, --username string   Healthbot Username (default "admin")
 ```
 
-A full list of the options available with the tool is described in the [docs](./docs/hb.md)
+A full list of the options available with the tool is described in the [docs](./docs/hb.md).
 
 ### Example
 
@@ -30,7 +30,7 @@ The example below will generate a request against hb-server to provision device 
 hb provision -r hb-server:8080 -u root -p changeme devices -d /tmp/devices/
 ```
 
-An example of a configuration can be seen below.
+An example of a configuration (mx.yml) can be seen below.
 
 ```yaml
 ---
