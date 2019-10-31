@@ -60,9 +60,13 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hb.yaml)")
 
 	RootCmd.PersistentFlags().StringP("resource", "r", "localhost:8080", "Healthbot Resource Name")
+	viper.BindPFlag("resource", RootCmd.PersistentFlags().Lookup("resource"))
 
 	RootCmd.PersistentFlags().StringP("username", "u", "admin", "Healthbot Username")
+	viper.BindPFlag("username", RootCmd.PersistentFlags().Lookup("username"))
+
 	RootCmd.PersistentFlags().StringP("password", "p", "****", "Healthbot Password")
+	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

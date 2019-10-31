@@ -24,6 +24,15 @@ simplify interacting with Healthbot.
 
 A full list of the options available with the tool is described in the [docs](./docs/hb.md).
 
+The config file (~/.hb.yaml) mentioned in the option above allows persistent setting of the following options:
+
+```yaml
+---
+resource: "hb-server:8080"
+username: root
+password: changeme
+```
+
 ### Example
 
 The example below will generate a request against hb-server to provision device defined in yml or json files in the /tmp/devices directory.

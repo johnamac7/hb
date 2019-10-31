@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -42,9 +43,9 @@ var devicesCmd = &cobra.Command{
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
 		directory := cmd.Flag("directory").Value.String()
-		resource := cmd.Flag("resource").Value.String()
-		username := cmd.Flag("username").Value.String()
-		password := cmd.Flag("password").Value.String()
+		resource := viper.GetString("resource")
+		username := viper.GetString("username")
+		password := viper.GetString("password")
 		filenames := FilesInDirectory(directory)
 		provisionDevices(directory, filenames, resource, username, password)
 	},
