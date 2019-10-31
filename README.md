@@ -1,3 +1,1 @@
-# hb
-
-command line tool for provisioning hb
+commands/hb.md
