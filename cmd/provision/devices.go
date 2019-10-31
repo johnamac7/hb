@@ -1,10 +1,30 @@
 package provision
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 )
+
+// Devices - collection of Device
+type Devices struct {
+	Device []Device `json:"device"`
+}
+
+// Device - info need to Register a Device in Healthbot
+type Device struct {
+	Authentication struct {
+		Password struct {
+			Password string `json:"password"`
+			Username string `json:"username"`
+		} `json:"password"`
+	} `json:"authentication"`
+	DeviceID string `json:"device-id"`
+	Host     string `json:"host"`
+}
 
 // devicesCmd represents the devices command
 var devicesCmd = &cobra.Command{
@@ -16,12 +36,31 @@ var devicesCmd = &cobra.Command{
 }
 
 func provisionDevices(directory string) {
-	fmt.Println("Using directory: " + directory)
-	names, err := filesInDirectory(directory)
+	fmt.Printf("Using directory: %s \n", directory)
+	filenames, err := filesInDirectory(directory)
 	if err != nil {
-		fmt.Println("Error Occurred: ", err)
+		fmt.Printf("Error Occurred: %s \n", err)
 	} else {
-		fmt.Printf("Using files: %s", names)
+		fmt.Printf("Using files: %s \n", filenames)
+	}
+	for _, filename := range filenames {
+		jsonFile, err := os.Open(directory + "/" + filename)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Printf("Successfully Opened %s \n", filename)
+
+		defer jsonFile.Close()
+
+		byteValue, _ := ioutil.ReadAll(jsonFile)
+		var devices Devices
+		json.Unmarshal(byteValue, &devices)
+
+		for _, device := range devices.Device {
+			fmt.Printf("%+v\n", device)
+		}
 	}
 }
 
