@@ -3,10 +3,10 @@ package provision
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"log"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
 
 // Devices - collection of Device
@@ -26,41 +26,34 @@ type Device struct {
 	Host     string `json:"host"`
 }
 
+// Parse - tries to parse yaml first, then json into the Devices struct
+func (c *Devices) Parse(data []byte) error {
+	if err := yaml.Unmarshal(data, c); err != nil {
+		if err := json.Unmarshal(data, c); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // devicesCmd represents the devices command
 var devicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
-		provisionDevices(cmd.Flag("directory").Value.String())
+		directory := cmd.Flag("directory").Value.String()
+		filenames := FilesInDirectory(directory)
+		provisionDevices(directory, filenames)
 	},
 }
 
-func provisionDevices(directory string) {
-	fmt.Printf("Using directory: %s \n", directory)
-	filenames, err := filesInDirectory(directory)
-	if err != nil {
-		fmt.Printf("Error Occurred: %s \n", err)
-	} else {
-		fmt.Printf("Using files: %s \n", filenames)
-	}
+func provisionDevices(directory string, filenames []string) {
 	for _, filename := range filenames {
-		jsonFile, err := os.Open(directory + "/" + filename)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Printf("Successfully Opened %s \n", filename)
-
-		defer jsonFile.Close()
-
-		byteValue, _ := ioutil.ReadAll(jsonFile)
 		var devices Devices
-		json.Unmarshal(byteValue, &devices)
-
-		for _, device := range devices.Device {
-			fmt.Printf("%+v\n", device)
+		if err := LoadConfiguration(directory+"/"+filename, &devices); err != nil {
+			log.Fatal("Problem with "+filename+" ", err)
 		}
+		fmt.Printf("%+v\n", devices)
 	}
 }
 

@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -25,10 +27,18 @@ var RootCmd = &cobra.Command{
 	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
+func generateMarkdown() {
+	err := doc.GenMarkdownTree(RootCmd, "./commands/")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(version string) {
 	VERSION = version
+	//generateMarkdown()
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -45,6 +55,9 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hb.yaml)")
 
 	RootCmd.PersistentFlags().StringP("resource", "r", "localhost:8080", "Healthbot Resource Name")
+
+	RootCmd.PersistentFlags().StringP("username", "u", "admin", "Healthbot Username")
+	RootCmd.PersistentFlags().StringP("password", "p", "****", "Healthbot Password")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
