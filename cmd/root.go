@@ -22,7 +22,7 @@ var (
 var RootCmd = &cobra.Command{
 	Use:   "hb",
 	Short: "Healthbot Command Line Interface",
-	Long:  `A tool for interacting with Healthbot over the REST API. 
+	Long: `A tool for interacting with Healthbot over the REST API. 
 	
 The intent with this tool is to provide bulk or aggregate functions, that
 simplify interacting with Healthbot. 
@@ -33,7 +33,7 @@ simplify interacting with Healthbot.
 }
 
 func generateMarkdown() {
-	err := doc.GenMarkdownTree(RootCmd, "./commands/")
+	err := doc.GenMarkdownTree(RootCmd, "./docs/")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,10 +1,12 @@
 package provision
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
@@ -22,7 +24,7 @@ type Device struct {
 			Username string `json:"username"`
 		} `json:"password"`
 	} `json:"authentication"`
-	DeviceID string `json:"device-id"`
+	DeviceID string `json:"device-id", yaml:"device-id"`
 	Host     string `json:"host"`
 }
 
@@ -36,24 +38,40 @@ func (c *Devices) Parse(data []byte) error {
 	return nil
 }
 
+func postDevices(devices Devices, resourceName, username, password string) {
+	client := resty.New()
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	client.SetDebug(true)
+	resp, err := client.R().
+		SetBasicAuth(username, password).
+		SetBody(devices).
+		Post("https://" + resourceName + "/api/v1/devices/")
+
+	fmt.Printf("%v, %v", resp, err)
+}
+
 // devicesCmd represents the devices command
 var devicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
 		directory := cmd.Flag("directory").Value.String()
+		resource := cmd.Flag("resource").Value.String()
+		username := cmd.Flag("username").Value.String()
+		password := cmd.Flag("password").Value.String()
 		filenames := FilesInDirectory(directory)
-		provisionDevices(directory, filenames)
+		provisionDevices(directory, filenames, resource, username, password)
 	},
 }
 
-func provisionDevices(directory string, filenames []string) {
+func provisionDevices(directory string, filenames []string, resource, username, password string) {
 	for _, filename := range filenames {
 		var devices Devices
 		if err := LoadConfiguration(directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
 		fmt.Printf("%+v\n", devices)
+		postDevices(devices, resource, username, password)
 	}
 }
 
