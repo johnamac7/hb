@@ -1,6 +1,6 @@
 ## hb
 
-[![GitHub release](https://img.shields.io/github/release/damianoneill/hb.svg)](https://GitHub.com/damianoneill/hb/releases/)
+[![GitHub release](https://img.shields.io/github/v/release/damianoneill/hb.svg)](https://GitHub.com/damianoneill/hb/releases/)
 
 Healthbot Command Line Interface
 
