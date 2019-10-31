@@ -4,7 +4,11 @@ Healthbot Command Line Interface
 
 ### Synopsis
 
-Healthbot Command Line Interface
+A tool for interacting with Healthbot over the REST API. 
+	
+The intent with this tool is to provide bulk or aggregate functions, that
+simplify interacting with Healthbot. 
+	
 
 ### Options
 

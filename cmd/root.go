@@ -22,6 +22,11 @@ var (
 var RootCmd = &cobra.Command{
 	Use:   "hb",
 	Short: "Healthbot Command Line Interface",
+	Long:  `A tool for interacting with Healthbot over the REST API. 
+	
+The intent with this tool is to provide bulk or aggregate functions, that
+simplify interacting with Healthbot. 
+	`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -38,7 +43,7 @@ func generateMarkdown() {
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(version string) {
 	VERSION = version
-	//generateMarkdown()
+	generateMarkdown()
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
