@@ -1,12 +1,10 @@
 package provision
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
@@ -24,7 +22,7 @@ type Device struct {
 			Username string `json:"username"`
 		} `json:"password"`
 	} `json:"authentication"`
-	DeviceID string `json:"device-id", yaml:"device-id"`
+	DeviceID string `json:"device-id" yaml:"device-id"`
 	Host     string `json:"host"`
 }
 
@@ -36,18 +34,6 @@ func (c *Devices) Parse(data []byte) error {
 		}
 	}
 	return nil
-}
-
-func postDevices(devices Devices, resourceName, username, password string) {
-	client := resty.New()
-	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-	client.SetDebug(true)
-	resp, err := client.R().
-		SetBasicAuth(username, password).
-		SetBody(devices).
-		Post("https://" + resourceName + "/api/v1/devices/")
-
-	fmt.Printf("%v, %v", resp, err)
 }
 
 // devicesCmd represents the devices command
@@ -70,8 +56,13 @@ func provisionDevices(directory string, filenames []string, resource, username, 
 		if err := LoadConfiguration(directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-		fmt.Printf("%+v\n", devices)
-		postDevices(devices, resource, username, password)
+		resp, err := POST(devices, resource, "/api/v1/devices/", username, password)
+		if err != nil {
+			fmt.Printf("Problem posting to Devices %v", err)
+		}
+		if resp.StatusCode() == 200 {
+			fmt.Printf("Successfully provisioned %v %s", len(devices.Device), "Devices \n")
+		}
 	}
 }
 

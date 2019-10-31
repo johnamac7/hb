@@ -1,12 +1,14 @@
 package provision
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"os"
 
 	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
+	"gopkg.in/resty.v1"
 )
 
 // Configuration - structures that get loaded from files
@@ -36,6 +38,19 @@ func FilesInDirectory(dirname string) (names []string) {
 	names, err = f.Readdirnames(-1)
 	f.Close()
 	fmt.Printf("Using files: %s \n", names)
+	return
+}
+
+// POST - HTTP POST to a Resource
+func POST(body interface{}, resource, path, username, password string) (resp *resty.Response, err error) {
+	client := resty.New()
+	//client.SetDebug(true)
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	resp, err = client.R().
+		SetBasicAuth(username, password).
+		SetBody(body).
+		Post("https://" + resource + path)
+
 	return
 }
 

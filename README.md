@@ -19,3 +19,32 @@ simplify interacting with Healthbot.
   -t, --toggle            Help message for toggle
   -u, --username string   Healthbot Username (default "admin")
 ```
+
+A full list of the options available with the tool is described in the [docs](./docs/hb.md)
+
+### Example
+
+The example below will generate a request against hb-server to provision device defined in yml or json files in the /tmp/devices directory.
+
+```sh
+hb provision -r hb-server:8080 -u root -p changeme devices -d /tmp/devices/
+```
+
+An example of a configuration can be seen below.
+
+```yaml
+---
+device:
+  - device-id: mx960-1
+    host: 172.30.177.102
+    authentication:
+      password:
+        username: doneill
+        password: "$9$.mQ3EhrvMX0BIcrlLXGDjkfT369"
+  - device-id: mx960-3
+    host: 172.30.177.113
+    authentication:
+      password:
+        username: doneill
+        password: "$9$3eJsnAuvMX-dsSreWXxwsmf5z/CuO1"
+```
