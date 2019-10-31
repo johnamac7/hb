@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/damianoneill/hbcli/cmd"
+	"github.com/damianoneill/hb/cmd"
 )
 
 import (
-	_ "github.com/damianoneill/hbcli/cmd/provision"
+	_ "github.com/damianoneill/hb/cmd/provision"
 )
 
 

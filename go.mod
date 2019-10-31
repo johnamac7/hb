@@ -1,4 +1,4 @@
-module github.com/damianoneill/hbcli
+module github.com/damianoneill/hb
 
 go 1.13
 

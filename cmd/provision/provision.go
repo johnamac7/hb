@@ -3,7 +3,7 @@ package provision
 import (
 	"os"
 
-	"github.com/damianoneill/hbcli/cmd"
+	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
 )
 

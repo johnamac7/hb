@@ -18,7 +18,7 @@ var (
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "hbcli",
+	Use:   "hb",
 	Short: "Healthbot Command Line Interface",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -42,7 +42,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hbcli.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hb.yaml)")
 
 	RootCmd.PersistentFlags().StringP("resource", "r", "localhost:8080", "Healthbot Resource Name")
 
@@ -64,9 +64,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".hbcli" (without extension).
+		// Search config in home directory with name ".hb" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".hbcli")
+		viper.SetConfigName(".hb")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
