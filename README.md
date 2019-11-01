@@ -35,6 +35,10 @@ password: changeme
 
 ### Example
 
+See below for a common set of example commands.
+
+#### Devices
+
 The example below will generate a request against hb-server to provision device defined in yml or json files in the /tmp/devices directory.
 
 ```sh
@@ -54,6 +58,29 @@ device:
         password: "$9$.mQ3EhrvMX0BIcrlLXGDjkfT369"
   - device-id: mx960-3
     host: 172.30.177.113
+```
+
+#### Device Groups
+
+The example below will generate a request against the HB Server with Username and Password defined in ~/.hb.yaml to provision Device Groups defined in yml or json files in the /tmp/device-groups directory.
+
+```sh
+hb provision device-groups -d /tmp/device-groups/
+```
+
+An example of a configuration (/tmp/device-groups/l2-swtiches.yml) can be seen below.
+
+```yaml
+---
+device-group:
+  - device-group-name: l2-test-group
+    devices:
+      - mx960-1
+      - mx960-3
+    authentication:
+      password:
+        username: root
+        password: "$9$VgY2akqfTQnGDPQFnpuevWLxd"
 ```
 
 More complete examples can be viewed in the [tests folder](./cmd/provision/testdata/).
