@@ -83,4 +83,16 @@ device-group:
         password: "$9$VgY2akqfTQnGDPQFnpuevWLxd"
 ```
 
+#### Helper Files
+
+The example below will generate a request against the HB Server with Username and Password defined in the local .hb.yaml to upload files in the /tmp/helper-files directory.
+
+```sh
+hb --config .hb.yaml provision helper-files -d /tmp/helper-files/
+Using config file: .hb.yaml
+Using directory: /tmp/helper-files/
+Using files: [bps.py]
+Successfully uploaded 1 Files
+```
+
 More complete examples can be viewed in the [tests folder](./cmd/provision/testdata/).
