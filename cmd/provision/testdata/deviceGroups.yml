@@ -1,0 +1,18 @@
+---
+device-group:
+  - device-group-name: l2-test-group
+    description: Set of L2 Switches
+    devices:
+      - mx960-1
+      - mx960-3
+    playbooks:
+      - chassis-kpis-playbook
+      - interface-kpis-playbook
+    authentication:
+      password:
+        password: "$9$VgY2akqfTQnGDPQFnpuevWLxd"
+        username: root
+    native-gpb:
+      ports:
+        - 50000
+  - device-group-name: ptp-test-group

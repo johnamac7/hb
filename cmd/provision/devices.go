@@ -60,7 +60,7 @@ type Vendor struct {
 	Cisco   *Cisco   `json:"cisco,omitempty"`
 }
 
-// Device - info need to Register a Device in Healthbot
+// Device - info needed to Register a Device in Healthbot
 type Device struct {
 	DeviceID       string          `json:"device-id" yaml:"device-id"`
 	Host           string          `json:"host"`
@@ -72,8 +72,6 @@ type Device struct {
 	Vendor         *Vendor         `json:"vendor,omitempty" yaml:"vendor,omitempty"`
 }
 
-// Device - info need to Register a Device in Healthbot
-
 // Parse - tries to parse yaml first, then json into the Devices struct
 func (c *Devices) Parse(data []byte) error {
 	if err := yaml.Unmarshal(data, c); err != nil {
@@ -82,6 +80,11 @@ func (c *Devices) Parse(data []byte) error {
 		}
 	}
 	return nil
+}
+
+// Dump - outputs Devices struct in either 'yaml' or 'json' format
+func (c *Devices) Dump(format string) string {
+	return DumpYAMLOrJSON(format, c)
 }
 
 // devicesCmd represents the devices command

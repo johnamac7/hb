@@ -2,6 +2,7 @@ package provision
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,11 +10,13 @@ import (
 	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
 	"gopkg.in/resty.v1"
+	"gopkg.in/yaml.v2"
 )
 
 // Configuration - structures that get loaded from files
 type Configuration interface {
 	Parse(data []byte) error
+	Dump(format string) string
 }
 
 // LoadConfiguration - populates a configuration type with data from file
@@ -52,6 +55,18 @@ func POST(body interface{}, resource, path, username, password string) (resp *re
 		Post("https://" + resource + path)
 
 	return
+}
+
+// DumpYAMLOrJSON - For a configuration, output json or yaml
+func DumpYAMLOrJSON(format string, configuration Configuration) string {
+	var data []byte
+	switch format {
+	case "yaml":
+		_ = yaml.Unmarshal(data, configuration)
+	default:
+		_ = json.Unmarshal(data, configuration)
+	}
+	return fmt.Sprintf("%v", data)
 }
 
 // provisionCmd represents the provision command

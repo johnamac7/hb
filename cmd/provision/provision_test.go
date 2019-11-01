@@ -47,3 +47,25 @@ func TestDeviceOmit(t *testing.T) {
 	assert.NotContains(t, string(partialDevice), "v2", "Optional Community type was not ignored")
 	assert.NotContains(t, string(partialDevice), "juniper", "Optional Vendor juniper was not ignored")
 }
+
+func TestDeviceGroupYamlParsing(t *testing.T) {
+	var deviceGroups DeviceGroups
+	err := deviceGroups.Parse(HelperLoadBytes(t, "deviceGroups.yml"))
+	assert.Nil(t, err, "Failed to parse yaml representation of DeviceGroups")
+	assert.Len(t, deviceGroups.DeviceGroup, 2, "Expected to parse 2 DeviceGroups")
+	assert.EqualValues(t, "l2-test-group", deviceGroups.DeviceGroup[0].DeviceGroupName, "Yaml type with a hyphen, didn't decode correctly")
+}
+
+func TestDeviceGroupOmit(t *testing.T) {
+	var deviceGroups DeviceGroups
+	_ = deviceGroups.Parse(HelperLoadBytes(t, "deviceGroups.yml"))
+	minDevice, err := json.Marshal(deviceGroups.DeviceGroup[1])
+	if err != nil {
+		assert.Nil(t, err, "Failed to marshal devicegroups to json")
+	}
+	assert.NotContains(t, string(minDevice), "description", "Optional Description type was not ignored")
+	assert.NotContains(t, string(minDevice), "devices", "Optional Devices type was not ignored")
+	assert.NotContains(t, string(minDevice), "playbooks", "Optional Playbooks type was not ignored")
+	assert.NotContains(t, string(minDevice), "authentication", "Optional Authentication type was not ignored")
+	assert.NotContains(t, string(minDevice), "native-gpb", "Optional Native GPB type was not ignored")
+}
