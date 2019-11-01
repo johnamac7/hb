@@ -40,8 +40,12 @@ func provisionHelperFiles(config Config, filenames []string) {
 		if err != nil {
 			fmt.Printf("Problem posting to Helper Files %v", err)
 		}
-		if resp.StatusCode() == 200 {
+
+		switch resp.StatusCode() {
+		case 200:
 			fmt.Printf("Successfully uploaded %v %s", len(filenames), "Files \n")
+		default:
+			fmt.Printf("Problem uploading Files: %v \n", resp.String())
 		}
 	}
 }

@@ -73,8 +73,12 @@ func provisionDeviceGroups(config Config, filenames []string) {
 		if err != nil {
 			fmt.Printf("Problem posting to DeviceGroups %v", err)
 		}
-		if resp.StatusCode() == 200 {
+
+		switch resp.StatusCode() {
+		case 200:
 			fmt.Printf("Successfully provisioned %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
+		default:
+			fmt.Printf("Problem updating Device Groups: %v \n", resp.String())
 		}
 	}
 }

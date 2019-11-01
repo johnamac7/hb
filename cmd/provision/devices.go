@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/resty.v1"
 	"gopkg.in/yaml.v2"
 )
 
@@ -92,6 +93,7 @@ var devicesCmd = &cobra.Command{
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
 		config := NewConfig(cmd)
+		config.erase = cmd.Flag("erase").Value.String()
 		filenames := FilesInDirectory(config.directory)
 		provisionDevices(config, filenames)
 	},
@@ -103,12 +105,24 @@ func provisionDevices(config Config, filenames []string) {
 		if err := LoadConfiguration(config.directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-		resp, err := POST(devices, config.resource, "/api/v1/devices/", config.username, config.password)
-		if err != nil {
-			fmt.Printf("Problem posting to Devices %v", err)
+
+		var resp *resty.Response
+		var err error
+		if config.erase == "true" {
+			resp, err = DELETE(devices, config.resource, "/api/v1/devices/", config.username, config.password)
+		} else {
+			resp, err = POST(devices, config.resource, "/api/v1/devices/", config.username, config.password)
 		}
-		if resp.StatusCode() == 200 {
-			fmt.Printf("Successfully provisioned %v %s", len(devices.Device), "Devices \n")
+
+		if err != nil {
+			fmt.Printf("Problem updating Devices %v", err)
+		}
+
+		switch resp.StatusCode() {
+		case 200:
+			fmt.Printf("Successfully updated %v %s", len(devices.Device), "Devices \n")
+		default:
+			fmt.Printf("Problem updating Devices: %v \n", resp.String())
 		}
 	}
 }
@@ -122,6 +136,8 @@ func init() {
 	// and all subcommands, e.g.:
 	// devicesCmd.PersistentFlags().String("foo", "", "A help for foo")
 	devicesCmd.PersistentFlags().StringP("directory", "d", "devices", "Default file location")
+
+	devicesCmd.PersistentFlags().BoolP("erase", "e", false, "to erase this configuration")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

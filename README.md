@@ -60,6 +60,14 @@ device:
     host: 172.30.177.113
 ```
 
+To delete the Devices using the configuration, you can pass the '-e' flag.
+
+```sh
+ hb provision -r hb-server:8080 -u root -p changeme devices -d /tmp/devices/mx.yml -e
+```
+
+> You can only delete Devices that are not associated with any Device Groups.
+
 #### Device Groups
 
 The example below will generate a request against the HB Server with Username and Password defined in ~/.hb.yaml to provision Device Groups defined in yml or json files in the /tmp/device-groups directory.
