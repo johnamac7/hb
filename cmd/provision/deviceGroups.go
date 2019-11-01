@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -58,23 +57,19 @@ var deviceGroupsCmd = &cobra.Command{
 	Use:   "device-groups",
 	Short: "Provision a set of Device Groups from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
-		directory := cmd.Flag("directory").Value.String()
-		// can be overridden in ~/.hb.yaml so viper used
-		resource := viper.GetString("resource")
-		username := viper.GetString("username")
-		password := viper.GetString("password")
-		filenames := FilesInDirectory(directory)
-		provisionDeviceGroups(directory, filenames, resource, username, password)
+		config := NewConfig(cmd)
+		filenames := FilesInDirectory(config.directory)
+		provisionDeviceGroups(config, filenames)
 	},
 }
 
-func provisionDeviceGroups(directory string, filenames []string, resource, username, password string) {
+func provisionDeviceGroups(config Config, filenames []string) {
 	for _, filename := range filenames {
 		var deviceGroups DeviceGroups
-		if err := LoadConfiguration(directory+"/"+filename, &deviceGroups); err != nil {
+		if err := LoadConfiguration(config.directory+"/"+filename, &deviceGroups); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-		resp, err := POST(deviceGroups, resource, "/api/v1/device-groups/", username, password)
+		resp, err := POST(deviceGroups, config.resource, "/api/v1/device-groups/", config.username, config.password)
 		if err != nil {
 			fmt.Printf("Problem posting to DeviceGroups %v", err)
 		}

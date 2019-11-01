@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
 )
 
@@ -15,19 +14,15 @@ var helperFilesCmd = &cobra.Command{
 	Use:   "helper-files",
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
-		directory := cmd.Flag("directory").Value.String()
-		// can be overridden in ~/.hb.yaml so viper used
-		resource := viper.GetString("resource")
-		username := viper.GetString("username")
-		password := viper.GetString("password")
-		filenames := FilesInDirectory(directory)
-		provisionHelperFiles(directory, filenames, resource, username, password)
+		config := NewConfig(cmd)
+		filenames := FilesInDirectory(config.directory)
+		provisionHelperFiles(config, filenames)
 	},
 }
 
-func provisionHelperFiles(directory string, filenames []string, resource, username, password string) {
+func provisionHelperFiles(config Config, filenames []string) {
 	for _, filename := range filenames {
-		f, err := os.Open(directory + "/" + filename)
+		f, err := os.Open(config.directory + "/" + filename)
 		if err != nil {
 			panic(err)
 		}
@@ -38,9 +33,9 @@ func provisionHelperFiles(directory string, filenames []string, resource, userna
 			SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 
 		resp, err := client.R().
-			SetBasicAuth(username, password).
+			SetBasicAuth(config.username, config.password).
 			SetFileReader("up_file", filename, f).
-			Post("https://" + resource + "/api/v1/files/helper-files/" + filename + "/")
+			Post("https://" + config.resource + "/api/v1/files/helper-files/" + filename + "/")
 
 		if err != nil {
 			fmt.Printf("Problem posting to Helper Files %v", err)

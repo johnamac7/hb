@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -92,23 +91,19 @@ var devicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
-		directory := cmd.Flag("directory").Value.String()
-		// can be overridden in ~/.hb.yaml so viper used
-		resource := viper.GetString("resource")
-		username := viper.GetString("username")
-		password := viper.GetString("password")
-		filenames := FilesInDirectory(directory)
-		provisionDevices(directory, filenames, resource, username, password)
+		config := NewConfig(cmd)
+		filenames := FilesInDirectory(config.directory)
+		provisionDevices(config, filenames)
 	},
 }
 
-func provisionDevices(directory string, filenames []string, resource, username, password string) {
+func provisionDevices(config Config, filenames []string) {
 	for _, filename := range filenames {
 		var devices Devices
-		if err := LoadConfiguration(directory+"/"+filename, &devices); err != nil {
+		if err := LoadConfiguration(config.directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-		resp, err := POST(devices, resource, "/api/v1/devices/", username, password)
+		resp, err := POST(devices, config.resource, "/api/v1/devices/", config.username, config.password)
 		if err != nil {
 			fmt.Printf("Problem posting to Devices %v", err)
 		}
