@@ -54,8 +54,6 @@ device:
         password: "$9$.mQ3EhrvMX0BIcrlLXGDjkfT369"
   - device-id: mx960-3
     host: 172.30.177.113
-    authentication:
-      password:
-        username: doneill
-        password: "$9$3eJsnAuvMX-dsSreWXxwsmf5z/CuO1"
 ```
+
+More complete examples can be viewed in the [tests folder](./cmd/provision/testdata/).
