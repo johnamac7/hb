@@ -15,17 +15,55 @@ type Devices struct {
 	Device []Device `json:"device"`
 }
 
+// Authentication - Collection type for Auth options
+type Authentication struct {
+	Password struct {
+		Password *string `json:"password"`
+		Username *string `json:"username"`
+	} `json:"password,omitempty"`
+}
+
+// IAgent - configure the NETCONF port
+type IAgent struct {
+	Port int `json:"port"`
+}
+
+// OpenConfig - configure the Open Config port
+type OpenConfig struct {
+	Port int `json:"port"`
+}
+
+// V2 - configure the SNMP community string
+type V2 struct {
+	Community string `json:"community"`
+}
+
+// Snmp - configure the SNMP port or Community String
+type Snmp struct {
+	Port int `json:"port,omitempty" yaml:"port,omitempty"`
+	V2   *V2 `json:"v2,omitempty" yaml:"v2,omitempty"`
+}
+
+// Vendor - Configure the Vendor information
+type Vendor struct {
+	Juniper struct {
+		OperatingSystem string `json:"operating-system" yaml:"operating-system"`
+	} `json:"juniper"`
+}
+
 // Device - info need to Register a Device in Healthbot
 type Device struct {
-	Authentication struct {
-		Password struct {
-			Password string `json:"password"`
-			Username string `json:"username"`
-		} `json:"password"`
-	} `json:"authentication"`
-	DeviceID string `json:"device-id" yaml:"device-id"`
-	Host     string `json:"host"`
+	DeviceID       string          `json:"device-id" yaml:"device-id"`
+	Host           string          `json:"host"`
+	SystemID       string          `json:"system-id,omitempty" yaml:"system-id,omitempty"`
+	Authentication *Authentication `json:"authentication,omitempty" yaml:"authentication,omitempty"`
+	IAgent         *IAgent         `json:"iAgent,omitempty" yaml:"iAgent,omitempty"`
+	OpenConfig     *OpenConfig     `json:"open-config,omitempty" yaml:"open-config,omitempty"`
+	Snmp           *Snmp           `json:"snmp,omitempty" yaml:"snmp,omitempty"`
+	Vendor         *Vendor         `json:"vendor,omitempty" yaml:"vendor,omitempty"`
 }
+
+// Device - info need to Register a Device in Healthbot
 
 // Parse - tries to parse yaml first, then json into the Devices struct
 func (c *Devices) Parse(data []byte) error {
@@ -43,6 +81,7 @@ var devicesCmd = &cobra.Command{
 	Short: "Provision a set of Devices from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
 		directory := cmd.Flag("directory").Value.String()
+		// can be overridden in ~/.hb.yaml so viper used
 		resource := viper.GetString("resource")
 		username := viper.GetString("username")
 		password := viper.GetString("password")
