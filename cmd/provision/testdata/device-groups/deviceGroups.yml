@@ -5,9 +5,6 @@ device-group:
     devices:
       - mx960-1
       - mx960-3
-    playbooks:
-      - chassis-kpis-playbook
-      - interface-kpis-playbook
     authentication:
       password:
         password: "$9$VgY2akqfTQnGDPQFnpuevWLxd"

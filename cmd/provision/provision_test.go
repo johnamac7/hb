@@ -22,7 +22,7 @@ func HelperLoadBytes(tb testing.TB, name string) []byte {
 
 func TestDeviceYamlParsing(t *testing.T) {
 	var devices Devices
-	err := devices.Parse(HelperLoadBytes(t, "devices.yml"))
+	err := devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
 	assert.Nil(t, err, "Failed to parse yaml representation of Devices")
 	assert.Len(t, devices.Device, 3, "Expected to parse 3 Devices")
 	assert.EqualValues(t, "4200_1", devices.Device[0].DeviceID, "Yaml type with a hyphen, didn't decode correctly")
@@ -30,7 +30,7 @@ func TestDeviceYamlParsing(t *testing.T) {
 
 func TestDeviceOmit(t *testing.T) {
 	var devices Devices
-	_ = devices.Parse(HelperLoadBytes(t, "devices.yml"))
+	_ = devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
 	minDevice, err := json.Marshal(devices.Device[2])
 	if err != nil {
 		assert.Nil(t, err, "Failed to marshal devices to json")
@@ -50,7 +50,7 @@ func TestDeviceOmit(t *testing.T) {
 
 func TestDeviceGroupYamlParsing(t *testing.T) {
 	var deviceGroups DeviceGroups
-	err := deviceGroups.Parse(HelperLoadBytes(t, "deviceGroups.yml"))
+	err := deviceGroups.Parse(HelperLoadBytes(t, "./device-groups/deviceGroups.yml"))
 	assert.Nil(t, err, "Failed to parse yaml representation of DeviceGroups")
 	assert.Len(t, deviceGroups.DeviceGroup, 2, "Expected to parse 2 DeviceGroups")
 	assert.EqualValues(t, "l2-test-group", deviceGroups.DeviceGroup[0].DeviceGroupName, "Yaml type with a hyphen, didn't decode correctly")
@@ -58,7 +58,7 @@ func TestDeviceGroupYamlParsing(t *testing.T) {
 
 func TestDeviceGroupOmit(t *testing.T) {
 	var deviceGroups DeviceGroups
-	_ = deviceGroups.Parse(HelperLoadBytes(t, "deviceGroups.yml"))
+	_ = deviceGroups.Parse(HelperLoadBytes(t, "./device-groups/deviceGroups.yml"))
 	minDevice, err := json.Marshal(deviceGroups.DeviceGroup[1])
 	if err != nil {
 		assert.Nil(t, err, "Failed to marshal devicegroups to json")

@@ -3,8 +3,10 @@ package provision
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -56,12 +58,30 @@ var deviceGroupsCmd = &cobra.Command{
 	Use:   "device-groups",
 	Short: "Provision a set of Device Groups from configuration files",
 	Run: func(cmd *cobra.Command, args []string) {
-		provisionDeviceGroups(cmd.Flag("directory").Value.String())
+		directory := cmd.Flag("directory").Value.String()
+		// can be overridden in ~/.hb.yaml so viper used
+		resource := viper.GetString("resource")
+		username := viper.GetString("username")
+		password := viper.GetString("password")
+		filenames := FilesInDirectory(directory)
+		provisionDeviceGroups(directory, filenames, resource, username, password)
 	},
 }
 
-func provisionDeviceGroups(directory string) {
-	fmt.Println("Using directory: " + directory)
+func provisionDeviceGroups(directory string, filenames []string, resource, username, password string) {
+	for _, filename := range filenames {
+		var deviceGroups DeviceGroups
+		if err := LoadConfiguration(directory+"/"+filename, &deviceGroups); err != nil {
+			log.Fatal("Problem with "+filename+" ", err)
+		}
+		resp, err := POST(deviceGroups, resource, "/api/v1/device-groups/", username, password)
+		if err != nil {
+			fmt.Printf("Problem posting to DeviceGroups %v", err)
+		}
+		if resp.StatusCode() == 200 {
+			fmt.Printf("Successfully provisioned %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
+		}
+	}
 }
 
 func init() {
