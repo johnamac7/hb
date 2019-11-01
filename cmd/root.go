@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
+	"gopkg.in/resty.v1"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -68,9 +70,16 @@ func init() {
 	RootCmd.PersistentFlags().StringP("password", "p", "****", "Healthbot Password")
 	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
 
+	RootCmd.PersistentFlags().Bool("debug", false, "Enable REST debugging")
+	viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
+
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	//setup resty
+	resty.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	viper.Set("restclient.RedirectPolicy", "always")
 }
 
 // initConfig reads in config file and ENV variables if set.

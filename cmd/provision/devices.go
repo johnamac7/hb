@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
 	"gopkg.in/yaml.v2"
 )
@@ -91,6 +92,11 @@ func (c *Devices) Dump(format string) string {
 var devicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "Provision a set of Devices from configuration files",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if viper.GetString("debug") == "true" {
+			resty.SetDebug(true)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		config := NewConfig(cmd)
 		config.erase = cmd.Flag("erase").Value.String()

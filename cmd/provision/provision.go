@@ -1,7 +1,6 @@
 package provision
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -66,23 +65,16 @@ func FilesInDirectory(dirname string) (names []string) {
 
 // POST - HTTP POST to a Resource
 func POST(body interface{}, resource, path, username, password string) (resp *resty.Response, err error) {
-	client := resty.New()
-	//client.SetDebug(true)
-	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-	resp, err = client.R().
+	resp, err = resty.R().
 		SetBasicAuth(username, password).
 		SetBody(body).
 		Post("https://" + resource + path)
-
 	return
 }
 
 // DELETE - HTTP POST to a Resource
 func DELETE(body interface{}, resource, path, username, password string) (resp *resty.Response, err error) {
-	client := resty.New()
-	//client.SetDebug(true)
-	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-	resp, err = client.R().
+	resp, err = resty.R().
 		SetBasicAuth(username, password).
 		SetBody(body).
 		Delete("https://" + resource + path)

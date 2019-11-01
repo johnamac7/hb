@@ -6,6 +6,8 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gopkg.in/resty.v1"
 	"gopkg.in/yaml.v2"
 )
 
@@ -56,6 +58,11 @@ func (c *DeviceGroups) Dump(format string) string {
 var deviceGroupsCmd = &cobra.Command{
 	Use:   "device-groups",
 	Short: "Provision a set of Device Groups from configuration files",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if viper.GetString("debug") == "true" {
+			resty.SetDebug(true)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		config := NewConfig(cmd)
 		filenames := FilesInDirectory(config.directory)

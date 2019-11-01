@@ -1,11 +1,11 @@
 package provision
 
 import (
-	"crypto/tls"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
 )
 
@@ -13,6 +13,11 @@ import (
 var helperFilesCmd = &cobra.Command{
 	Use:   "helper-files",
 	Short: "Provision a set of Devices from configuration files",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if viper.GetString("debug") == "true" {
+			resty.SetDebug(true)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		config := NewConfig(cmd)
 		filenames := FilesInDirectory(config.directory)
@@ -28,11 +33,7 @@ func provisionHelperFiles(config Config, filenames []string) {
 		}
 		defer f.Close()
 
-		client := resty.New().
-			//SetDebug(true).
-			SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-
-		resp, err := client.R().
+		resp, err := resty.R().
 			SetBasicAuth(config.username, config.password).
 			SetFileReader("up_file", filename, f).
 			Post("https://" + config.resource + "/api/v1/files/helper-files/" + filename + "/")
