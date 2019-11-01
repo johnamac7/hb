@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
@@ -63,20 +64,21 @@ var deviceGroupsCmd = &cobra.Command{
 			resty.SetDebug(true)
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		config := NewConfig(cmd)
-		filenames := FilesInDirectory(config.directory)
+	Run: func(c *cobra.Command, args []string) {
+		config := cmd.NewConfig(c)
+		config.Directory = c.Flag("directory").Value.String()
+		filenames := FilesInDirectory(config.Directory)
 		provisionDeviceGroups(config, filenames)
 	},
 }
 
-func provisionDeviceGroups(config Config, filenames []string) {
+func provisionDeviceGroups(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
 		var deviceGroups DeviceGroups
-		if err := LoadConfiguration(config.directory+"/"+filename, &deviceGroups); err != nil {
+		if err := LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-		resp, err := POST(deviceGroups, config.resource, "/api/v1/device-groups/", config.username, config.password)
+		resp, err := POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
 		if err != nil {
 			fmt.Printf("Problem posting to DeviceGroups %v", err)
 		}

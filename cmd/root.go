@@ -52,6 +52,32 @@ func Execute(version string) {
 	}
 }
 
+// Config - bean for common provisioning configuration info
+type Config struct {
+	Directory string
+	Resource  string
+	Username  string
+	Password  string
+	Erase     string
+}
+
+// NewConfig - construct the bean from viper / cmd
+func NewConfig(cmd *cobra.Command) Config {
+	return Config{
+		Resource: viper.GetString("resource"),
+		Username: viper.GetString("username"),
+		Password: viper.GetString("password"),
+	}
+}
+
+// GET - HTTP GET to a Resource
+func GET(resource, path, username, password string) (resp *resty.Response, err error) {
+	resp, err = resty.R().
+		SetBasicAuth(username, password).
+		Get("https://" + resource + path)
+	return
+}
+
 func init() {
 	cobra.OnInitialize(initConfig)
 

@@ -37,6 +37,46 @@ password: changeme
 
 See below for a common set of example commands.
 
+#### Summary
+
+Provides an overview of the Healthbot Installation
+
+```sh
+$ hb summary -r foyle:8080
+Using config file: /Users/doneill/.hb.yaml
+
+Healthbot Version: HealthBot 2.1.0-beta
+Healthbot Time: 2019-11-01T18:41:59Z
+
+No of Managed Devices: 12
+
+  Device Id  Platform    Release                           Serial Number
+
+  MX34
+  Ex10       EX4200-48P  15.1R5.5                          BQ0208189292
+  Ex11       EX4200-48P  15.1R5.5                          BQ0210090233
+  vMX-210    VMX         17.4R2.4                          VM5C4052633B
+  vMX-212    VMX         17.4R2.4                          VM5C4053F72F
+  flames     MX240       19.4I-20191005.0.2307             JN1263A8BAFC
+  Capella38  ACX6360-OR  19.2I-20190228_dev_common.0.2316  DX008
+  Capella39  ACX6360-OR  19.2I-20190228_dev_common.0.2316  DX004
+  Mx35       MX240       19.3R1.8                          JN11AC665AFC
+  Mx34       MX240       17.4R1.16                         JN1261DB3AFC
+  mx960-1    MX960       19.3R1.8                          JN1232C39AFA
+  mx960-3    MX960       19.3R1.8                          JN1233EF1AFA
+
+No of Device Groups: 6
+
+  Device Group    No of Devices
+
+  Cappella_Group              2
+  Real_Mx_Group               2
+  ptp-test-group              2
+  TT-SNMP-Group               1
+  Switch_Group                2
+  Test-Group                  3
+```
+
 #### Devices
 
 The example below will generate a request against hb-server to provision device defined in yml or json files in the /tmp/devices directory.

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
@@ -18,25 +19,26 @@ var helperFilesCmd = &cobra.Command{
 			resty.SetDebug(true)
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		config := NewConfig(cmd)
-		filenames := FilesInDirectory(config.directory)
+	Run: func(c *cobra.Command, args []string) {
+		config := cmd.NewConfig(c)
+		config.Directory = c.Flag("directory").Value.String()
+		filenames := FilesInDirectory(config.Directory)
 		provisionHelperFiles(config, filenames)
 	},
 }
 
-func provisionHelperFiles(config Config, filenames []string) {
+func provisionHelperFiles(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
-		f, err := os.Open(config.directory + "/" + filename)
+		f, err := os.Open(config.Directory + "/" + filename)
 		if err != nil {
 			panic(err)
 		}
 		defer f.Close()
 
 		resp, err := resty.R().
-			SetBasicAuth(config.username, config.password).
+			SetBasicAuth(config.Username, config.Password).
 			SetFileReader("up_file", filename, f).
-			Post("https://" + config.resource + "/api/v1/files/helper-files/" + filename + "/")
+			Post("https://" + config.Resource + "/api/v1/files/helper-files/" + filename + "/")
 
 		if err != nil {
 			fmt.Printf("Problem posting to Helper Files %v", err)

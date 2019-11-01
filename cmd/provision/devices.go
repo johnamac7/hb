@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
@@ -97,27 +98,28 @@ var devicesCmd = &cobra.Command{
 			resty.SetDebug(true)
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		config := NewConfig(cmd)
-		config.erase = cmd.Flag("erase").Value.String()
-		filenames := FilesInDirectory(config.directory)
+	Run: func(c *cobra.Command, args []string) {
+		config := cmd.NewConfig(c)
+		config.Erase = c.Flag("erase").Value.String()
+		config.Directory = c.Flag("directory").Value.String()
+		filenames := FilesInDirectory(config.Directory)
 		provisionDevices(config, filenames)
 	},
 }
 
-func provisionDevices(config Config, filenames []string) {
+func provisionDevices(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
 		var devices Devices
-		if err := LoadConfiguration(config.directory+"/"+filename, &devices); err != nil {
+		if err := LoadConfiguration(config.Directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
 
 		var resp *resty.Response
 		var err error
-		if config.erase == "true" {
-			resp, err = DELETE(devices, config.resource, "/api/v1/devices/", config.username, config.password)
+		if config.Erase == "true" {
+			resp, err = DELETE(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
 		} else {
-			resp, err = POST(devices, config.resource, "/api/v1/devices/", config.username, config.password)
+			resp, err = POST(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
 		}
 
 		if err != nil {

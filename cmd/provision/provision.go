@@ -8,7 +8,6 @@ import (
 
 	"github.com/damianoneill/hb/cmd"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
 	"gopkg.in/yaml.v2"
 )
@@ -17,25 +16,6 @@ import (
 type Configuration interface {
 	Parse(data []byte) error
 	Dump(format string) string
-}
-
-// Config - bean for common provisioning configuration info
-type Config struct {
-	directory string
-	resource  string
-	username  string
-	password  string
-	erase     string
-}
-
-// NewConfig - construct the bean from viper / cmd
-func NewConfig(cmd *cobra.Command) Config {
-	return Config{
-		directory: cmd.Flag("directory").Value.String(),
-		resource:  viper.GetString("resource"),
-		username:  viper.GetString("username"),
-		password:  viper.GetString("password"),
-	}
 }
 
 // LoadConfiguration - populates a configuration type with data from file
