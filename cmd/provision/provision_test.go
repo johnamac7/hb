@@ -45,4 +45,5 @@ func TestDeviceOmit(t *testing.T) {
 		assert.Nil(t, err, "Failed to marshal devices to json")
 	}
 	assert.NotContains(t, string(partialDevice), "v2", "Optional Community type was not ignored")
+	assert.NotContains(t, string(partialDevice), "juniper", "Optional Vendor juniper was not ignored")
 }

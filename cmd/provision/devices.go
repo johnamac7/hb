@@ -44,11 +44,20 @@ type Snmp struct {
 	V2   *V2 `json:"v2,omitempty" yaml:"v2,omitempty"`
 }
 
+// Juniper - option to define the Operating system
+type Juniper struct {
+	OperatingSystem string `json:"operating-system" yaml:"operating-system"`
+}
+
+// Cisco - option to define the Operating system
+type Cisco struct {
+	OperatingSystem string `json:"operating-system" yaml:"operating-system"`
+}
+
 // Vendor - Configure the Vendor information
 type Vendor struct {
-	Juniper struct {
-		OperatingSystem string `json:"operating-system" yaml:"operating-system"`
-	} `json:"juniper"`
+	Juniper *Juniper `json:"juniper,omitempty"`
+	Cisco   *Cisco   `json:"cisco,omitempty"`
 }
 
 // Device - info need to Register a Device in Healthbot

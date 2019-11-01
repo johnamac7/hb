@@ -18,7 +18,7 @@ device:
     vendor:
       juniper:
         operating-system: junos
-  - device-id: mx960-1 # min with auth and part of snmp
+  - device-id: mx960-1 # min with auth, cisco and part of snmp
     host: 172.30.177.102
     snmp:
       port: 161
@@ -26,5 +26,8 @@ device:
       password:
         password: "$9$.mQ3EhrvMX0BIcrlLXGDjkfT369"
         username: doneill
+    vendor:
+      cisco:
+        operating-system: iosxr
   - device-id: mx960-3 # min
     host: 172.30.177.113
