@@ -89,10 +89,6 @@ func init() {
 	RootCmd.PersistentFlags().Bool("debug", false, "Enable REST debugging")
 	viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 	//setup resty
 	resty.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 	viper.Set("restclient.RedirectPolicy", "always")

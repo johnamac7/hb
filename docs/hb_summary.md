@@ -1,10 +1,10 @@
 ## hb summary
 
-Summarizes the Healthbot Installation
+Summarizes the Healthbot Installation.
 
 ### Synopsis
 
-Summarizes the Healthbot Installation
+Provides some high level information on the installation version, Provisioned Devices and Device Groups.
 
 ```
 hb summary [flags]

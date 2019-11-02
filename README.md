@@ -15,10 +15,10 @@ simplify interacting with Healthbot.
 
 ```
       --config string     config file (default is $HOME/.hb.yaml)
+      --debug             Enable REST debugging
   -h, --help              help for hb
   -p, --password string   Healthbot Password (default "****")
   -r, --resource string   Healthbot Resource Name (default "localhost:8080")
-  -t, --toggle            Help message for toggle
   -u, --username string   Healthbot Username (default "admin")
 ```
 

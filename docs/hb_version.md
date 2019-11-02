@@ -1,10 +1,10 @@
 ## hb version
 
-Show hb version
+Show hb version.
 
 ### Synopsis
 
-Show hb version
+Show hb version.
 
 ```
 hb version [flags]
