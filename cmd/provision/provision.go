@@ -53,10 +53,9 @@ func POST(body interface{}, resource, path, username, password string) (resp *re
 }
 
 // DELETE - HTTP POST to a Resource
-func DELETE(body interface{}, resource, path, username, password string) (resp *resty.Response, err error) {
+func DELETE(resource, path, username, password string) (resp *resty.Response, err error) {
 	resp, err = resty.R().
 		SetBasicAuth(username, password).
-		SetBody(body).
 		Delete("https://" + resource + path)
 
 	return

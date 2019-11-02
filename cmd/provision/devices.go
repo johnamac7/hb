@@ -108,30 +108,48 @@ var devicesCmd = &cobra.Command{
 	},
 }
 
+func deleteDevices(config cmd.Config, devices Devices) {
+	noFailures := true
+	for _, device := range devices.Device {
+		resp, err := DELETE(config.Resource, "/api/v1/device/"+device.DeviceID+"/", config.Username, config.Password)
+		if err != nil {
+			fmt.Printf("Problem posting to Devices %v", err)
+			return
+		}
+		if resp.StatusCode() != 204 {
+			fmt.Printf("Problem updating Device %v: %v \n", device.DeviceID, resp.String())
+			noFailures = false
+		}
+	}
+	if noFailures {
+		fmt.Printf("Successfully updated %v %s", len(devices.Device), "Devices \n")
+	}
+}
+
+func createDevices(config cmd.Config, devices Devices) {
+	resp, err := POST(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
+	if err != nil {
+		fmt.Printf("Problem posting to Devices %v", err)
+		return
+	}
+	switch resp.StatusCode() {
+	case 200:
+		fmt.Printf("Successfully updated %v %s", len(devices.Device), "Devices \n")
+	default:
+		fmt.Printf("Problem updating Devices: %v \n", resp.String())
+	}
+}
+
 func provisionDevices(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
 		var devices Devices
 		if err := LoadConfiguration(config.Directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-
-		var resp *resty.Response
-		var err error
 		if config.Erase == "true" {
-			resp, err = DELETE(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
+			deleteDevices(config, devices)
 		} else {
-			resp, err = POST(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
-		}
-
-		if err != nil {
-			fmt.Printf("Problem updating Devices %v", err)
-		}
-
-		switch resp.StatusCode() {
-		case 200:
-			fmt.Printf("Successfully updated %v %s", len(devices.Device), "Devices \n")
-		default:
-			fmt.Printf("Problem updating Devices: %v \n", resp.String())
+			createDevices(config, devices)
 		}
 	}
 }

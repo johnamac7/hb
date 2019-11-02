@@ -74,29 +74,48 @@ var deviceGroupsCmd = &cobra.Command{
 	},
 }
 
+func deleteDeviceGroups(config cmd.Config, deviceGroups DeviceGroups) {
+	noFailures := true
+	for _, dg := range deviceGroups.DeviceGroup {
+		resp, err := DELETE(config.Resource, "/api/v1/device-group/"+dg.DeviceGroupName+"/", config.Username, config.Password)
+		if err != nil {
+			fmt.Printf("Problem posting to DeviceGroups %v", err)
+			return
+		}
+		if resp.StatusCode() != 204 {
+			fmt.Printf("Problem updating Device Group %v: %v \n", dg.DeviceGroupName, resp.String())
+			noFailures = false
+		}
+	}
+	if noFailures {
+		fmt.Printf("Successfully updated %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
+	}
+}
+
+func createDeviceGroups(config cmd.Config, deviceGroups DeviceGroups) {
+	resp, err := POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+	if err != nil {
+		fmt.Printf("Problem posting to DeviceGroups %v", err)
+		return
+	}
+	switch resp.StatusCode() {
+	case 200:
+		fmt.Printf("Successfully updated %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
+	default:
+		fmt.Printf("Problem updating Device Groups: %v \n", resp.String())
+	}
+}
+
 func provisionDeviceGroups(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
 		var deviceGroups DeviceGroups
 		if err := LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-
-		var resp *resty.Response
-		var err error
 		if config.Erase == "true" {
-			resp, err = DELETE(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+			deleteDeviceGroups(config, deviceGroups)
 		} else {
-			resp, err = POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
-		}
-		if err != nil {
-			fmt.Printf("Problem posting to DeviceGroups %v", err)
-		}
-
-		switch resp.StatusCode() {
-		case 200:
-			fmt.Printf("Successfully updated %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
-		default:
-			fmt.Printf("Problem updating Device Groups: %v \n", resp.String())
+			createDeviceGroups(config, deviceGroups)
 		}
 	}
 }
