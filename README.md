@@ -4,14 +4,14 @@
 
 Healthbot Command Line Interface
 
-### Synopsis
+## Synopsis
 
 A tool for interacting with Healthbot over the REST API.
 
 The intent with this tool is to provide bulk or aggregate functions, that
 simplify interacting with Healthbot.
 
-### Options
+## Options
 
 ```
       --config string     config file (default is $HOME/.hb.yaml)
@@ -33,11 +33,11 @@ username: root
 password: changeme
 ```
 
-### Example
+## Examples
 
 See below for a common set of example commands.
 
-#### Summary
+### Summary
 
 Provides an overview of the Healthbot Installation
 
@@ -77,7 +77,7 @@ No of Device Groups: 6
   Test-Group                  3
 ```
 
-#### Devices
+### Devices
 
 The example below will generate a request against hb-server to provision device defined in yml or json files in the /tmp/devices directory.
 
@@ -108,7 +108,7 @@ To delete the Devices using the configuration, you can pass the '-e' flag.
 
 > You can only delete Devices that are not associated with any Device Groups.
 
-#### Device Groups
+### Device Groups
 
 The example below will generate a request against the HB Server with Username and Password defined in ~/.hb.yaml to provision Device Groups defined in yml or json files in the /tmp/device-groups directory.
 
@@ -144,3 +144,17 @@ Successfully uploaded 1 Files
 ```
 
 More complete examples can be viewed in the [tests folder](./cmd/provision/testdata/).
+
+## TODO
+
+- Commands
+  - ~~version~~ - verison of hb tool
+  - ~~completion~~ - bash completion for hb
+  - ~~Summary~~ - high level info on the Healthbot installation
+  - ~~Provision/Devices~~
+  - ~~Provision/DeviceGroups~~
+  - ~~Provision/Helper Files~~
+  - Provision/Playbook Instances
+  - Scaffold - generate hb configuration from an existing Healthbot deployment (round trip)
+- Refactor common code across commands
+- UT

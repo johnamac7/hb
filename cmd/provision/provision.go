@@ -77,7 +77,8 @@ func DumpYAMLOrJSON(format string, configuration Configuration) string {
 // provisionCmd represents the provision command
 var provisionCmd = &cobra.Command{
 	Use:   "provision",
-	Short: "Provision Healthbot Entities using config files",
+	Short: "Provision Healthbot Entities using config files.",
+	Long:  `Grouping for a set of commands for provisioning Healthbot Entities.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_ = cmd.Usage()
 	},

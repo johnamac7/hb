@@ -9,7 +9,7 @@ import (
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Show " + RootCmd.Use + " version",
+	Short: "Show " + RootCmd.Use + " version.",
 	Run:   Version,
 }
 

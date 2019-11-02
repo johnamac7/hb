@@ -13,7 +13,8 @@ import (
 // helperFilesCmd represents the helperFiles command
 var helperFilesCmd = &cobra.Command{
 	Use:   "helper-files",
-	Short: "Provision a set of Devices from configuration files",
+	Short: "Upload Helper Files to Healthbot.",
+	Long:  `Helper files for e.g. Playbook, Rules, Python files can be uploaded to Healthbot with this command.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if viper.GetString("debug") == "true" {
 			resty.SetDebug(true)

@@ -3,11 +3,9 @@ package cmd
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/cobra/doc"
 	"gopkg.in/resty.v1"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -34,18 +32,10 @@ simplify interacting with Healthbot.
 	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
-func generateMarkdown() {
-	err := doc.GenMarkdownTree(RootCmd, "./docs/")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(version string) {
 	VERSION = version
-	//generateMarkdown()
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

@@ -19,7 +19,8 @@ import (
 // summaryCmd represents the summary command
 var summaryCmd = &cobra.Command{
 	Use:   "summary",
-	Short: "Summarizes the Healthbot Installation",
+	Short: "Summarizes the Healthbot Installation.",
+	Long:  `Provides some high level information on the installation version, Provisioned Devices and Device Groups.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if viper.GetString("debug") == "true" {
 			resty.SetDebug(true)
@@ -69,6 +70,18 @@ type DeviceGroups struct {
 	} `json:"device-group"`
 }
 
+// NewTable - provides a blank table for rendering.
+func NewTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetBorder(false)
+	table.SetColumnSeparator("")
+	table.SetHeaderLine(false)
+	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
+	table.SetAutoFormatHeaders(false)
+	table.Append([]string{"", "", "", ""})
+	return table
+}
+
 func summary(config Config) {
 	resp, err := GET(config.Resource, "/api/v1/system-details/", config.Username, config.Password)
 	if err != nil {
@@ -101,18 +114,11 @@ func summary(config Config) {
 
 	fmt.Println("")
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetBorder(false)
-	table.SetColumnSeparator("")
+	table := NewTable()
 	table.SetHeader([]string{"Device Id", "Platform", "Release", "Serial Number"})
-	table.SetHeaderLine(false)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAutoFormatHeaders(false)
-	table.Append([]string{"", "", "", ""})
 	for _, fact := range deviceFacts {
 		table.Append([]string{fact.DeviceID, fact.Facts.Platform, fact.Facts.Release, fact.Facts.SerialNumber})
 	}
-
 	table.Render() // Send output
 
 	//
@@ -132,18 +138,11 @@ func summary(config Config) {
 
 	fmt.Println("")
 
-	table = tablewriter.NewWriter(os.Stdout)
-	table.SetBorder(false)
-	table.SetColumnSeparator("")
+	table = NewTable()
 	table.SetHeader([]string{"Device Group", "No of Devices"})
-	table.SetHeaderLine(false)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAutoFormatHeaders(false)
-	table.Append([]string{"", "", ""})
 	for _, deviceGroup := range deviceGroups.DeviceGroup {
 		table.Append([]string{deviceGroup.DeviceGroupName, strconv.Itoa(len(deviceGroup.Devices))})
 	}
-
 	table.Render() // Send output
 
 	fmt.Println("")

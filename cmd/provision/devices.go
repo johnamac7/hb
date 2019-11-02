@@ -92,7 +92,8 @@ func (c *Devices) Dump(format string) string {
 // devicesCmd represents the devices command
 var devicesCmd = &cobra.Command{
 	Use:   "devices",
-	Short: "Provision a set of Devices from configuration files",
+	Short: "Provision a set of Devices from configuration files.",
+	Long:  `The Devices can be defined in YAML or JSON and conform to the payload definitions for the REST API.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if viper.GetString("debug") == "true" {
 			resty.SetDebug(true)

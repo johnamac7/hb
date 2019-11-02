@@ -58,7 +58,8 @@ func (c *DeviceGroups) Dump(format string) string {
 // deviceGroupsCmd represents the deviceGroups command
 var deviceGroupsCmd = &cobra.Command{
 	Use:   "device-groups",
-	Short: "Provision a set of Device Groups from configuration files",
+	Short: "Provision a set of Device Groups from configuration files.",
+	Long:  `The Device groups can be defined in YAML or JSON and conform to the payload definitions for the REST API.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if viper.GetString("debug") == "true" {
 			resty.SetDebug(true)
