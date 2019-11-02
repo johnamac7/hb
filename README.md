@@ -151,10 +151,12 @@ More complete examples can be viewed in the [tests folder](./cmd/provision/testd
   - ~~version~~ - verison of hb tool
   - ~~completion~~ - bash completion for hb
   - ~~Summary~~ - high level info on the Healthbot installation
-  - ~~Provision/Devices~~
-  - ~~Provision/DeviceGroups~~
-  - ~~Provision/Helper Files~~
-  - Provision/Playbook Instances
+  - Provision
+    - ~~Devices~~
+    - ~~DeviceGroups~~
+    - ~~Helper Files~~
+    - Playbook Instances
+    - All
   - Scaffold - generate hb configuration from an existing Healthbot deployment (round trip)
 - Refactor common code across commands
 - UT

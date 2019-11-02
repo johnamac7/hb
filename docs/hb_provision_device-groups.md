@@ -14,6 +14,7 @@ hb provision device-groups [flags]
 
 ```
   -d, --directory string   Default file location (default "device-groups")
+  -e, --erase              to erase this configuration
   -h, --help               help for device-groups
 ```
 

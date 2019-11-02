@@ -68,6 +68,7 @@ var deviceGroupsCmd = &cobra.Command{
 	Run: func(c *cobra.Command, args []string) {
 		config := cmd.NewConfig(c)
 		config.Directory = c.Flag("directory").Value.String()
+		config.Erase = c.Flag("erase").Value.String()
 		filenames := FilesInDirectory(config.Directory)
 		provisionDeviceGroups(config, filenames)
 	},
@@ -79,14 +80,21 @@ func provisionDeviceGroups(config cmd.Config, filenames []string) {
 		if err := LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
-		resp, err := POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+
+		var resp *resty.Response
+		var err error
+		if config.Erase == "true" {
+			resp, err = DELETE(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+		} else {
+			resp, err = POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+		}
 		if err != nil {
 			fmt.Printf("Problem posting to DeviceGroups %v", err)
 		}
 
 		switch resp.StatusCode() {
 		case 200:
-			fmt.Printf("Successfully provisioned %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
+			fmt.Printf("Successfully updated %v %s", len(deviceGroups.DeviceGroup), "Device Groups \n")
 		default:
 			fmt.Printf("Problem updating Device Groups: %v \n", resp.String())
 		}
@@ -102,6 +110,8 @@ func init() {
 	// and all subcommands, e.g.:
 	// deviceGroupsCmd.PersistentFlags().String("foo", "", "A help for foo")
 	deviceGroupsCmd.PersistentFlags().StringP("directory", "d", "device-groups", "Default file location")
+
+	deviceGroupsCmd.PersistentFlags().BoolP("erase", "e", false, "to erase this configuration")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
