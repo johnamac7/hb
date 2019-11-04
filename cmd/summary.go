@@ -61,15 +61,6 @@ type DeviceFacts []struct {
 	} `json:"facts,omitempty"`
 }
 
-// DeviceGroups - Provides Device Groups
-type DeviceGroups struct {
-	DeviceGroup []struct {
-		Description     string   `json:"description,omitempty"`
-		DeviceGroupName string   `json:"device-group-name"`
-		Devices         []string `json:"devices"`
-	} `json:"device-group"`
-}
-
 // NewTable - provides a blank table for rendering.
 func NewTable() *tablewriter.Table {
 	table := tablewriter.NewWriter(os.Stdout)
@@ -141,7 +132,7 @@ func summary(config Config) {
 	table = NewTable()
 	table.SetHeader([]string{"Device Group", "No of Devices"})
 	for _, deviceGroup := range deviceGroups.DeviceGroup {
-		table.Append([]string{deviceGroup.DeviceGroupName, strconv.Itoa(len(deviceGroup.Devices))})
+		table.Append([]string{deviceGroup.DeviceGroupName, strconv.Itoa(len(*deviceGroup.Devices))})
 	}
 	table.Render() // Send output
 

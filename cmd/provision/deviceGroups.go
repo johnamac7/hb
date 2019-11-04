@@ -1,7 +1,6 @@
 package provision
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -9,51 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
-	"gopkg.in/yaml.v2"
 )
-
-// DeviceGroups - collection of Device Groups
-type DeviceGroups struct {
-	DeviceGroup []DeviceGroup `json:"device-group" yaml:"device-group"`
-}
-
-// DGAuthentication - Option to Override the individual Device Username/Passwords
-type DGAuthentication struct {
-	Password struct {
-		Password *string `json:"password"`
-		Username *string `json:"username"`
-	} `json:"password,omitempty" yaml:"password,omitempty"`
-}
-
-// NativeGpb - Override the default JTI Port(s)
-type NativeGpb struct {
-	Ports []int `json:"ports"`
-}
-
-// DeviceGroup - info needed to Register a DeviceGroup in Healthbot
-type DeviceGroup struct {
-	DeviceGroupName string            `json:"device-group-name" yaml:"device-group-name"`
-	Description     *string           `json:"description,omitempty" yaml:"description,omitempty"`
-	Devices         *[]string         `json:"devices,omitempty" yaml:"devices,omitempty"`
-	Playbooks       *[]string         `json:"playbooks,omitempty" yaml:"playbooks,omitempty"`
-	Authentication  *DGAuthentication `json:"authentication,omitempty" yaml:"authentication,omitempty"`
-	NativeGpb       *NativeGpb        `json:"native-gpb,omitempty" yaml:"native-gpb,omitempty"`
-}
-
-// Parse - tries to parse yaml first, then json into the Devices struct
-func (c *DeviceGroups) Parse(data []byte) error {
-	if err := yaml.Unmarshal(data, c); err != nil {
-		if err := json.Unmarshal(data, c); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// Dump - outputs DeviceGroups struct in either 'yaml' or 'json' format
-func (c *DeviceGroups) Dump(format string) string {
-	return DumpYAMLOrJSON(format, c)
-}
 
 // deviceGroupsCmd represents the deviceGroups command
 var deviceGroupsCmd = &cobra.Command{
@@ -69,15 +24,15 @@ var deviceGroupsCmd = &cobra.Command{
 		config := cmd.NewConfig(c)
 		config.Directory = c.Flag("directory").Value.String()
 		config.Erase = c.Flag("erase").Value.String()
-		filenames := FilesInDirectory(config.Directory)
+		filenames := cmd.FilesInDirectory(config.Directory)
 		provisionDeviceGroups(config, filenames)
 	},
 }
 
-func deleteDeviceGroups(config cmd.Config, deviceGroups DeviceGroups) {
+func deleteDeviceGroups(config cmd.Config, deviceGroups cmd.DeviceGroups) {
 	noFailures := true
 	for _, dg := range deviceGroups.DeviceGroup {
-		resp, err := DELETE(config.Resource, "/api/v1/device-group/"+dg.DeviceGroupName+"/", config.Username, config.Password)
+		resp, err := cmd.DELETE(config.Resource, "/api/v1/device-group/"+dg.DeviceGroupName+"/", config.Username, config.Password)
 		if err != nil {
 			fmt.Printf("Problem posting to DeviceGroups %v", err)
 			return
@@ -92,8 +47,8 @@ func deleteDeviceGroups(config cmd.Config, deviceGroups DeviceGroups) {
 	}
 }
 
-func createDeviceGroups(config cmd.Config, deviceGroups DeviceGroups) {
-	resp, err := POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+func createDeviceGroups(config cmd.Config, deviceGroups cmd.DeviceGroups) {
+	resp, err := cmd.POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
 	if err != nil {
 		fmt.Printf("Problem posting to DeviceGroups %v", err)
 		return
@@ -108,8 +63,8 @@ func createDeviceGroups(config cmd.Config, deviceGroups DeviceGroups) {
 
 func provisionDeviceGroups(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
-		var deviceGroups DeviceGroups
-		if err := LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
+		var deviceGroups cmd.DeviceGroups
+		if err := cmd.LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
 		if config.Erase == "true" {

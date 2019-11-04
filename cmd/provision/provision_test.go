@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/damianoneill/hb/cmd"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +22,7 @@ func HelperLoadBytes(tb testing.TB, name string) []byte {
 }
 
 func TestDeviceYamlParsing(t *testing.T) {
-	var devices Devices
+	var devices cmd.Devices
 	err := devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
 	assert.Nil(t, err, "Failed to parse yaml representation of Devices")
 	assert.Len(t, devices.Device, 3, "Expected to parse 3 Devices")
@@ -29,7 +30,7 @@ func TestDeviceYamlParsing(t *testing.T) {
 }
 
 func TestDeviceOmit(t *testing.T) {
-	var devices Devices
+	var devices cmd.Devices
 	_ = devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
 	minDevice, err := json.Marshal(devices.Device[2])
 	if err != nil {
@@ -49,7 +50,7 @@ func TestDeviceOmit(t *testing.T) {
 }
 
 func TestDeviceGroupYamlParsing(t *testing.T) {
-	var deviceGroups DeviceGroups
+	var deviceGroups cmd.DeviceGroups
 	err := deviceGroups.Parse(HelperLoadBytes(t, "./device-groups/deviceGroups.yml"))
 	assert.Nil(t, err, "Failed to parse yaml representation of DeviceGroups")
 	assert.Len(t, deviceGroups.DeviceGroup, 2, "Expected to parse 2 DeviceGroups")
@@ -57,7 +58,7 @@ func TestDeviceGroupYamlParsing(t *testing.T) {
 }
 
 func TestDeviceGroupOmit(t *testing.T) {
-	var deviceGroups DeviceGroups
+	var deviceGroups cmd.DeviceGroups
 	_ = deviceGroups.Parse(HelperLoadBytes(t, "./device-groups/deviceGroups.yml"))
 	minDevice, err := json.Marshal(deviceGroups.DeviceGroup[1])
 	if err != nil {

@@ -77,6 +77,26 @@ No of Device Groups: 6
   Test-Group                  3
 ```
 
+### Scaffold
+
+The scaffold command will read the configuration from a Healthbot installation and create the config directories and learned configuration. The example below assumes your in the directory where the config should be written too and that a valid .hb.yaml exists for the Healthbot installation you want to learn from.
+
+```sh
+hb --config .hb.yaml scaffold  .
+```
+
+```console
+$ tree .
+.
+├── device-groups
+│   └── device-groups.yml
+├── devices
+    └── devices.yml
+
+
+2 directories, 2 files
+```
+
 ### Devices
 
 The example below will generate a request against hb-server to provision device defined in yml or json files in the /tmp/devices directory.
@@ -160,3 +180,4 @@ More complete examples can be viewed in the [tests folder](./cmd/provision/testd
   - Scaffold - generate hb configuration from an existing Healthbot deployment (round trip)
 - Refactor common code across commands
 - UT
+- Move types into their own package

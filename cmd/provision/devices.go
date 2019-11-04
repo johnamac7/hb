@@ -1,7 +1,6 @@
 package provision
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -9,85 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
-	"gopkg.in/yaml.v2"
 )
-
-// Devices - collection of Device
-type Devices struct {
-	Device []Device `json:"device"`
-}
-
-// Authentication - Collection type for Auth options
-type Authentication struct {
-	Password struct {
-		Password *string `json:"password"`
-		Username *string `json:"username"`
-	} `json:"password,omitempty"`
-}
-
-// IAgent - configure the NETCONF port
-type IAgent struct {
-	Port int `json:"port"`
-}
-
-// OpenConfig - configure the Open Config port
-type OpenConfig struct {
-	Port int `json:"port"`
-}
-
-// V2 - configure the SNMP community string
-type V2 struct {
-	Community string `json:"community"`
-}
-
-// Snmp - configure the SNMP port or Community String
-type Snmp struct {
-	Port int `json:"port,omitempty" yaml:"port,omitempty"`
-	V2   *V2 `json:"v2,omitempty" yaml:"v2,omitempty"`
-}
-
-// Juniper - option to define the Operating system
-type Juniper struct {
-	OperatingSystem string `json:"operating-system" yaml:"operating-system"`
-}
-
-// Cisco - option to define the Operating system
-type Cisco struct {
-	OperatingSystem string `json:"operating-system" yaml:"operating-system"`
-}
-
-// Vendor - Configure the Vendor information
-type Vendor struct {
-	Juniper *Juniper `json:"juniper,omitempty"`
-	Cisco   *Cisco   `json:"cisco,omitempty"`
-}
-
-// Device - info needed to Register a Device in Healthbot
-type Device struct {
-	DeviceID       string          `json:"device-id" yaml:"device-id"`
-	Host           string          `json:"host"`
-	SystemID       string          `json:"system-id,omitempty" yaml:"system-id,omitempty"`
-	Authentication *Authentication `json:"authentication,omitempty" yaml:"authentication,omitempty"`
-	IAgent         *IAgent         `json:"iAgent,omitempty" yaml:"iAgent,omitempty"`
-	OpenConfig     *OpenConfig     `json:"open-config,omitempty" yaml:"open-config,omitempty"`
-	Snmp           *Snmp           `json:"snmp,omitempty" yaml:"snmp,omitempty"`
-	Vendor         *Vendor         `json:"vendor,omitempty" yaml:"vendor,omitempty"`
-}
-
-// Parse - tries to parse yaml first, then json into the Devices struct
-func (c *Devices) Parse(data []byte) error {
-	if err := yaml.Unmarshal(data, c); err != nil {
-		if err := json.Unmarshal(data, c); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// Dump - outputs Devices struct in either 'yaml' or 'json' format
-func (c *Devices) Dump(format string) string {
-	return DumpYAMLOrJSON(format, c)
-}
 
 // devicesCmd represents the devices command
 var devicesCmd = &cobra.Command{
@@ -103,15 +24,15 @@ var devicesCmd = &cobra.Command{
 		config := cmd.NewConfig(c)
 		config.Erase = c.Flag("erase").Value.String()
 		config.Directory = c.Flag("directory").Value.String()
-		filenames := FilesInDirectory(config.Directory)
+		filenames := cmd.FilesInDirectory(config.Directory)
 		provisionDevices(config, filenames)
 	},
 }
 
-func deleteDevices(config cmd.Config, devices Devices) {
+func deleteDevices(config cmd.Config, devices cmd.Devices) {
 	noFailures := true
 	for _, device := range devices.Device {
-		resp, err := DELETE(config.Resource, "/api/v1/device/"+device.DeviceID+"/", config.Username, config.Password)
+		resp, err := cmd.DELETE(config.Resource, "/api/v1/device/"+device.DeviceID+"/", config.Username, config.Password)
 		if err != nil {
 			fmt.Printf("Problem posting to Devices %v", err)
 			return
@@ -126,8 +47,8 @@ func deleteDevices(config cmd.Config, devices Devices) {
 	}
 }
 
-func createDevices(config cmd.Config, devices Devices) {
-	resp, err := POST(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
+func createDevices(config cmd.Config, devices cmd.Devices) {
+	resp, err := cmd.POST(devices, config.Resource, "/api/v1/devices/", config.Username, config.Password)
 	if err != nil {
 		fmt.Printf("Problem posting to Devices %v", err)
 		return
@@ -142,8 +63,8 @@ func createDevices(config cmd.Config, devices Devices) {
 
 func provisionDevices(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
-		var devices Devices
-		if err := LoadConfiguration(config.Directory+"/"+filename, &devices); err != nil {
+		var devices cmd.Devices
+		if err := cmd.LoadConfiguration(config.Directory+"/"+filename, &devices); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
 		if config.Erase == "true" {

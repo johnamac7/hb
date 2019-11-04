@@ -23,7 +23,7 @@ var helperFilesCmd = &cobra.Command{
 	Run: func(c *cobra.Command, args []string) {
 		config := cmd.NewConfig(c)
 		config.Directory = c.Flag("directory").Value.String()
-		filenames := FilesInDirectory(config.Directory)
+		filenames := cmd.FilesInDirectory(config.Directory)
 		provisionHelperFiles(config, filenames)
 	},
 }

@@ -1,12 +1,19 @@
 package cmd
 
 import (
+	"bufio"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/resty.v1"
+	"gopkg.in/yaml.v2"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -49,6 +56,206 @@ type Config struct {
 	Username  string
 	Password  string
 	Erase     string
+}
+
+// Devices - collection of Device
+type Devices struct {
+	Device []Device `json:"device"`
+}
+
+// Authentication - Collection type for Auth options
+type Authentication struct {
+	Password struct {
+		Password *string `json:"password"`
+		Username *string `json:"username"`
+	} `json:"password,omitempty"`
+}
+
+// IAgent - configure the NETCONF port
+type IAgent struct {
+	Port int `json:"port"`
+}
+
+// OpenConfig - configure the Open Config port
+type OpenConfig struct {
+	Port int `json:"port"`
+}
+
+// V2 - configure the SNMP community string
+type V2 struct {
+	Community string `json:"community"`
+}
+
+// Snmp - configure the SNMP port or Community String
+type Snmp struct {
+	Port int `json:"port,omitempty" yaml:"port,omitempty"`
+	V2   *V2 `json:"v2,omitempty" yaml:"v2,omitempty"`
+}
+
+// Juniper - option to define the Operating system
+type Juniper struct {
+	OperatingSystem string `json:"operating-system" yaml:"operating-system"`
+}
+
+// Cisco - option to define the Operating system
+type Cisco struct {
+	OperatingSystem string `json:"operating-system" yaml:"operating-system"`
+}
+
+// Vendor - Configure the Vendor information
+type Vendor struct {
+	Juniper *Juniper `json:"juniper,omitempty"`
+	Cisco   *Cisco   `json:"cisco,omitempty"`
+}
+
+// Device - info needed to Register a Device in Healthbot
+type Device struct {
+	DeviceID       string          `json:"device-id" yaml:"device-id"`
+	Host           string          `json:"host"`
+	SystemID       string          `json:"system-id,omitempty" yaml:"system-id,omitempty"`
+	Authentication *Authentication `json:"authentication,omitempty" yaml:"authentication,omitempty"`
+	IAgent         *IAgent         `json:"iAgent,omitempty" yaml:"iAgent,omitempty"`
+	OpenConfig     *OpenConfig     `json:"open-config,omitempty" yaml:"open-config,omitempty"`
+	Snmp           *Snmp           `json:"snmp,omitempty" yaml:"snmp,omitempty"`
+	Vendor         *Vendor         `json:"vendor,omitempty" yaml:"vendor,omitempty"`
+}
+
+// Parse - tries to parse yaml first, then json into the Devices struct
+func (c *Devices) Parse(data []byte) error {
+	if err := yaml.Unmarshal(data, c); err != nil {
+		if err := json.Unmarshal(data, c); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Dump - outputs Devices struct in either 'yaml' or 'json' format
+func (c *Devices) Dump(format string) string {
+	return DumpYAMLOrJSON(format, c)
+}
+
+// DeviceGroups - collection of Device Groups
+type DeviceGroups struct {
+	DeviceGroup []DeviceGroup `json:"device-group" yaml:"device-group"`
+}
+
+// DGAuthentication - Option to Override the individual Device Username/Passwords
+type DGAuthentication struct {
+	Password struct {
+		Password *string `json:"password"`
+		Username *string `json:"username"`
+	} `json:"password,omitempty" yaml:"password,omitempty"`
+}
+
+// NativeGpb - Override the default JTI Port(s)
+type NativeGpb struct {
+	Ports []int `json:"ports"`
+}
+
+// DeviceGroup - info needed to Register a DeviceGroup in Healthbot
+type DeviceGroup struct {
+	DeviceGroupName string            `json:"device-group-name" yaml:"device-group-name"`
+	Description     *string           `json:"description,omitempty" yaml:"description,omitempty"`
+	Devices         *[]string         `json:"devices,omitempty" yaml:"devices,omitempty"`
+	Playbooks       *[]string         `json:"playbooks,omitempty" yaml:"playbooks,omitempty"`
+	Authentication  *DGAuthentication `json:"authentication,omitempty" yaml:"authentication,omitempty"`
+	NativeGpb       *NativeGpb        `json:"native-gpb,omitempty" yaml:"native-gpb,omitempty"`
+}
+
+// Configuration - structures that get loaded from files
+type Configuration interface {
+	Parse(data []byte) error
+	Dump(format string) string
+}
+
+// Parse - tries to parse yaml first, then json into the Devices struct
+func (c *DeviceGroups) Parse(data []byte) error {
+	if err := yaml.Unmarshal(data, c); err != nil {
+		if err := json.Unmarshal(data, c); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// LoadConfiguration - populates a configuration type with data from file
+func LoadConfiguration(filelocation string, configuration Configuration) error {
+	data, err := ioutil.ReadFile(filelocation)
+	if err != nil {
+		return err
+	}
+	if err := configuration.Parse(data); err != nil {
+		return err
+	}
+	return nil
+}
+
+// FilesInDirectory - returns a list of filenames for a given directory
+func FilesInDirectory(dirname string) (names []string) {
+	fmt.Printf("Using directory: %s \n", dirname)
+	f, err := os.Open(dirname)
+	if err != nil {
+		return
+	}
+	names, err = f.Readdirnames(-1)
+	f.Close()
+	fmt.Printf("Using files: %s \n", names)
+	return
+}
+
+// POST - HTTP POST to a Resource
+func POST(body interface{}, resource, path, username, password string) (resp *resty.Response, err error) {
+	resp, err = resty.R().
+		SetBasicAuth(username, password).
+		SetBody(body).
+		Post("https://" + resource + path)
+	return
+}
+
+// DELETE - HTTP POST to a Resource
+func DELETE(resource, path, username, password string) (resp *resty.Response, err error) {
+	resp, err = resty.R().
+		SetBasicAuth(username, password).
+		Delete("https://" + resource + path)
+
+	return
+}
+
+// DumpYAMLOrJSON - For a configuration, output json or yaml
+func DumpYAMLOrJSON(format string, configuration Configuration) string {
+	var data []byte
+	switch format {
+	case "yaml":
+		_ = yaml.Unmarshal(data, configuration)
+	default:
+		_ = json.Unmarshal(data, configuration)
+	}
+	return fmt.Sprintf("%v", data)
+}
+
+// Dump - outputs DeviceGroups struct in either 'yaml' or 'json' format
+func (c *DeviceGroups) Dump(format string) string {
+	return DumpYAMLOrJSON(format, c)
+}
+
+// AskForConfirmation - console y/n
+func AskForConfirmation(s string, tries int, in io.Reader) bool {
+	r := bufio.NewReader(in)
+	for ; tries > 0; tries-- {
+		fmt.Printf("%s [y/n]: ", s)
+		res, err := r.ReadString('\n')
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Empty input (i.e. "\n")
+		if len(res) < 2 {
+			continue
+		}
+		return strings.ToLower(strings.TrimSpace(res))[0] == 'y'
+	}
+	return false
 }
 
 // NewConfig - construct the bean from viper / cmd
