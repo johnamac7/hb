@@ -89,7 +89,7 @@ func init() {
 	// playbookInstancesCmd.PersistentFlags().String("foo", "", "A help for foo")
 	provisionCmd.PersistentFlags().StringP("directory", "d", "playbook-instances", "Default file location")
 
-	provisionCmd.PersistentFlags().BoolP("erase", "e", false, "to erase this configuration")
+	//provisionCmd.PersistentFlags().BoolP("erase", "e", false, "to erase this configuration")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// playbookInstancesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

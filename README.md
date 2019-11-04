@@ -164,6 +164,21 @@ Using files: [bps.py]
 Successfully uploaded 1 Files
 ```
 
+#### Playbook Instances
+
+The example below will generate a request against the HB Server with values defined in ~/.hb.yaml to provision Playbook Instances defined in yml or json files in the /tmp/playbook-instances directory.
+
+```sh
+$ hb provision playbook-instances -d /tmp/playbook-instances/
+Using config file: /Users/doneill/.hb.yaml
+Using directory: /tmp/playbook-instances/
+Using files: [playbook-instances.yml]
+Successfully updated 1 Device Groups
+Successfully committed Playbook Instances configuration
+```
+
+> Currently there is no erase command for playbook instances.
+
 More complete examples can be viewed in the [types folder](./types/testdata/).
 
 ## TODO

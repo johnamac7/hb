@@ -13,18 +13,19 @@ hb provision helper-files [flags]
 ### Options
 
 ```
-  -d, --directory string   Default file location (default "helper-files")
-  -h, --help               help for helper-files
+  -h, --help   help for helper-files
 ```
 
 ### Options inherited from parent commands
 
 ```
-      --config string     config file (default is $HOME/.hb.yaml)
-      --debug             Enable REST debugging
-  -p, --password string   Healthbot Password (default "****")
-  -r, --resource string   Healthbot Resource Name (default "localhost:8080")
-  -u, --username string   Healthbot Username (default "admin")
+      --config string      config file (default is $HOME/.hb.yaml)
+      --debug              Enable REST debugging
+  -d, --directory string   Default file location (default "playbook-instances")
+  -e, --erase              to erase this configuration
+  -p, --password string    Healthbot Password (default "****")
+  -r, --resource string    Healthbot Resource Name (default "localhost:8080")
+  -u, --username string    Healthbot Username (default "admin")
 ```
 
 ### SEE ALSO

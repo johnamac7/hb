@@ -5,7 +5,9 @@ Generate a config directory from an existing Healthbot installation
 ### Synopsis
 
 This command when pointed at an existing Healthbot installation, will generate
-	valid configuration for the provision sub commands e.g. devices, device-groups, etc.
+	valid configuration for the provision sub commands e.g. devices, device-groups, playbook-instances, etc.
+	
+	The command requires a single argument, the directory where the configs should be written too, current directory is valid.
 
 ```
 hb scaffold [flags]

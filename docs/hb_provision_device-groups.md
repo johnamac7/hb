@@ -13,19 +13,19 @@ hb provision device-groups [flags]
 ### Options
 
 ```
-  -d, --directory string   Default file location (default "device-groups")
-  -e, --erase              to erase this configuration
-  -h, --help               help for device-groups
+  -h, --help   help for device-groups
 ```
 
 ### Options inherited from parent commands
 
 ```
-      --config string     config file (default is $HOME/.hb.yaml)
-      --debug             Enable REST debugging
-  -p, --password string   Healthbot Password (default "****")
-  -r, --resource string   Healthbot Resource Name (default "localhost:8080")
-  -u, --username string   Healthbot Username (default "admin")
+      --config string      config file (default is $HOME/.hb.yaml)
+      --debug              Enable REST debugging
+  -d, --directory string   Default file location (default "playbook-instances")
+  -e, --erase              to erase this configuration
+  -p, --password string    Healthbot Password (default "****")
+  -r, --resource string    Healthbot Resource Name (default "localhost:8080")
+  -u, --username string    Healthbot Username (default "admin")
 ```
 
 ### SEE ALSO

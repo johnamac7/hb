@@ -1,19 +1,19 @@
-## hb provision devices
+## hb provision playbook-instances
 
-Provision a set of Devices from configuration files.
+Provision Playbook Instances from configuration files.
 
 ### Synopsis
 
-The Devices can be defined in YAML or JSON and conform to the payload definitions for the REST API.
+The Playbook Instances can be defined in YAML or JSON and conform to the payload definitions for the REST API.
 
 ```
-hb provision devices [flags]
+hb provision playbook-instances [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for devices
+  -h, --help   help for playbook-instances
 ```
 
 ### Options inherited from parent commands
