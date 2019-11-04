@@ -1,4 +1,4 @@
-package provision
+package types
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/damianoneill/hb/cmd"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +21,7 @@ func HelperLoadBytes(tb testing.TB, name string) []byte {
 }
 
 func TestDeviceYamlParsing(t *testing.T) {
-	var devices cmd.Devices
+	var devices Devices
 	err := devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
 	assert.Nil(t, err, "Failed to parse yaml representation of Devices")
 	assert.Len(t, devices.Device, 3, "Expected to parse 3 Devices")
@@ -30,7 +29,7 @@ func TestDeviceYamlParsing(t *testing.T) {
 }
 
 func TestDeviceOmit(t *testing.T) {
-	var devices cmd.Devices
+	var devices Devices
 	_ = devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
 	minDevice, err := json.Marshal(devices.Device[2])
 	if err != nil {
@@ -50,7 +49,7 @@ func TestDeviceOmit(t *testing.T) {
 }
 
 func TestDeviceGroupYamlParsing(t *testing.T) {
-	var deviceGroups cmd.DeviceGroups
+	var deviceGroups DeviceGroups
 	err := deviceGroups.Parse(HelperLoadBytes(t, "./device-groups/deviceGroups.yml"))
 	assert.Nil(t, err, "Failed to parse yaml representation of DeviceGroups")
 	assert.Len(t, deviceGroups.DeviceGroup, 2, "Expected to parse 2 DeviceGroups")
@@ -58,7 +57,7 @@ func TestDeviceGroupYamlParsing(t *testing.T) {
 }
 
 func TestDeviceGroupOmit(t *testing.T) {
-	var deviceGroups cmd.DeviceGroups
+	var deviceGroups DeviceGroups
 	_ = deviceGroups.Parse(HelperLoadBytes(t, "./device-groups/deviceGroups.yml"))
 	minDevice, err := json.Marshal(deviceGroups.DeviceGroup[1])
 	if err != nil {
@@ -69,4 +68,12 @@ func TestDeviceGroupOmit(t *testing.T) {
 	assert.NotContains(t, string(minDevice), "playbooks", "Optional Playbooks type was not ignored")
 	assert.NotContains(t, string(minDevice), "authentication", "Optional Authentication type was not ignored")
 	assert.NotContains(t, string(minDevice), "native-gpb", "Optional Native GPB type was not ignored")
+}
+
+func TestPlaybookInstanceYamlParsing(t *testing.T) {
+	var playbookInstances PlaybookInstances
+	err := playbookInstances.Parse(HelperLoadBytes(t, "./playbook-instances/playbook-instances.yml"))
+	assert.Nil(t, err, "Failed to parse yaml representation of Playbook Instances (DeviceGroups)")
+	assert.Len(t, playbookInstances.DeviceGroup, 1, "Expected to parse 1 Instances")
+	assert.EqualValues(t, "ptp-test-group", playbookInstances.DeviceGroup[0].DeviceGroupName, "Yaml type with a hyphen, didn't decode correctly")
 }

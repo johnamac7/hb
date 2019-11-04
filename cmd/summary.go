@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/damianoneill/hb/types"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -85,6 +86,7 @@ func summary(config Config) {
 		return
 	}
 	fmt.Println("")
+	fmt.Printf("Healthbot Resource: %s \n", config.Resource)
 	fmt.Printf("Healthbot Version: %s \n", systemDetails.Version)
 	fmt.Printf("Healthbot Time: %s \n", systemDetails.ServerTime)
 
@@ -119,7 +121,7 @@ func summary(config Config) {
 		fmt.Printf("Problem retrieving from Healthbot %v", err)
 	}
 
-	var deviceGroups DeviceGroups
+	var deviceGroups types.DeviceGroups
 	if err := json.Unmarshal(resp.Body(), &deviceGroups); err != nil {
 		fmt.Printf("%v", err)
 		return

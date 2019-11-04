@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/damianoneill/hb/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
@@ -23,7 +24,7 @@ var scaffoldCmd = &cobra.Command{
 	Use:   "scaffold",
 	Short: "Generate a config directory from an existing Healthbot installation",
 	Long: `This command when pointed at an existing Healthbot installation, will generate
-	valid configuration for the provision sub commands e.g. devices, device-groups, etc.
+	valid configuration for the provision sub commands e.g. devices, device-groups, playbook-instances, etc.
 	
 	The command requires a single argument, the directory where the configs should be written too, current directory is valid.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
@@ -71,7 +72,7 @@ func scaffold(config Config, path string) {
 		return
 	}
 
-	var devices Devices
+	var devices types.Devices
 	if err := json.Unmarshal(resp.Body(), &devices); err != nil {
 		fmt.Printf("%v", err)
 		return
@@ -113,7 +114,7 @@ func scaffold(config Config, path string) {
 		return
 	}
 
-	var deviceGroups DeviceGroups
+	var deviceGroups types.DeviceGroups
 	if err := json.Unmarshal(resp.Body(), &deviceGroups); err != nil {
 		fmt.Printf("%v", err)
 		return
@@ -127,6 +128,40 @@ func scaffold(config Config, path string) {
 	err = ioutil.WriteFile(path+string(filepath.Separator)+"device-groups"+string(filepath.Separator)+"device-groups.yml", data, os.ModePerm)
 	if err != nil {
 		fmt.Printf("Problem writing Device Groups Config %v", err)
+		return
+	}
+
+	//
+
+	os.Mkdir(path+string(filepath.Separator)+"playbook-instances", os.ModePerm)
+
+	resp, err = GET(config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
+	if err != nil {
+		fmt.Printf("Problem getting Device Groups %v", err)
+		return
+	}
+	switch resp.StatusCode() {
+	case 200:
+		break
+	default:
+		fmt.Printf("Problem getting Device Groups: %v \n", resp.String())
+		return
+	}
+
+	var playbookInstances types.PlaybookInstances
+	if err := json.Unmarshal(resp.Body(), &playbookInstances); err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+
+	data, err = yaml.Marshal(&playbookInstances)
+	if err != nil {
+		fmt.Printf("Problem with Marshalling Yaml: %v", err)
+		return
+	}
+	err = ioutil.WriteFile(path+string(filepath.Separator)+"playbook-instances"+string(filepath.Separator)+"playbook-instances.yml", data, os.ModePerm)
+	if err != nil {
+		fmt.Printf("Problem writing Playbook Instances Config %v", err)
 		return
 	}
 

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/damianoneill/hb/cmd"
+	"github.com/damianoneill/hb/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/resty.v1"
@@ -29,7 +30,7 @@ var deviceGroupsCmd = &cobra.Command{
 	},
 }
 
-func deleteDeviceGroups(config cmd.Config, deviceGroups cmd.DeviceGroups) {
+func deleteDeviceGroups(config cmd.Config, deviceGroups types.DeviceGroups) {
 	noFailures := true
 	for _, dg := range deviceGroups.DeviceGroup {
 		resp, err := cmd.DELETE(config.Resource, "/api/v1/device-group/"+dg.DeviceGroupName+"/", config.Username, config.Password)
@@ -47,7 +48,7 @@ func deleteDeviceGroups(config cmd.Config, deviceGroups cmd.DeviceGroups) {
 	}
 }
 
-func createDeviceGroups(config cmd.Config, deviceGroups cmd.DeviceGroups) {
+func createDeviceGroups(config cmd.Config, deviceGroups types.DeviceGroups) {
 	resp, err := cmd.POST(deviceGroups, config.Resource, "/api/v1/device-groups/", config.Username, config.Password)
 	if err != nil {
 		fmt.Printf("Problem posting to DeviceGroups %v", err)
@@ -63,8 +64,8 @@ func createDeviceGroups(config cmd.Config, deviceGroups cmd.DeviceGroups) {
 
 func provisionDeviceGroups(config cmd.Config, filenames []string) {
 	for _, filename := range filenames {
-		var deviceGroups cmd.DeviceGroups
-		if err := cmd.LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
+		var deviceGroups types.DeviceGroups
+		if err := types.LoadConfiguration(config.Directory+"/"+filename, &deviceGroups); err != nil {
 			log.Fatal("Problem with "+filename+" ", err)
 		}
 		if config.Erase == "true" {

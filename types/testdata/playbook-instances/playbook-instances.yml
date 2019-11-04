@@ -1,0 +1,42 @@
+---
+device-group:
+  - device-group-name: ptp-test-group
+    devices:
+      - mx960-1
+      - mx960-3
+    playbooks:
+      - chassis-kpis-playbook
+      - ptp-playbook
+    variable:
+      - instance-id: ptp-test-playbook
+        playbook: ptp-playbook
+        rule: protocol.ptp/ptp-lock-status
+      - instance-id: ptp-test-playbook
+        playbook: ptp-playbook
+        rule: protocol.ptp/ptp-phase-offset
+      - instance-id: test
+        playbook: chassis-kpis-playbook
+        rule: chassis.temperatures/check-re-temperature
+        variable-value:
+          - name: re-slot-no
+            value: "1"
+          - name: re-temperature-high-threshold
+            value: "55"
+          - name: re-temperature-low-threshold
+            value: "45"
+      - instance-id: test
+        playbook: chassis-kpis-playbook
+        rule: chassis.power/check-pem-power-usage
+        variable-value:
+          - name: power-input-type
+            value: power-dc-input
+          - name: pem-power-usage-threshold
+            value: "80"
+      - instance-id: test
+        playbook: chassis-kpis-playbook
+        rule: chassis.alarms/check-chassis-alarms
+        variable-value: []
+      - instance-id: test
+        playbook: chassis-kpis-playbook
+        rule: chassis.fan/check-fan-health
+        variable-value: []

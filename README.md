@@ -91,10 +91,11 @@ $ tree .
 ├── device-groups
 │   └── device-groups.yml
 ├── devices
-    └── devices.yml
+│   └── devices.yml
+└── playbook-instances
+    └── playbook-instances.yml
 
-
-2 directories, 2 files
+3 directories, 3 files
 ```
 
 ### Devices
@@ -163,7 +164,7 @@ Using files: [bps.py]
 Successfully uploaded 1 Files
 ```
 
-More complete examples can be viewed in the [tests folder](./cmd/provision/testdata/).
+More complete examples can be viewed in the [types folder](./types/testdata/).
 
 ## TODO
 
@@ -180,4 +181,4 @@ More complete examples can be viewed in the [tests folder](./cmd/provision/testd
   - Scaffold - generate hb configuration from an existing Healthbot deployment (round trip)
 - Refactor common code across commands
 - UT
-- Move types into their own package
+- ~~Move types into their own package~~
