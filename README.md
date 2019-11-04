@@ -11,6 +11,8 @@ A tool for interacting with Healthbot over the REST API.
 The intent with this tool is to provide bulk or aggregate functions, that
 simplify interacting with Healthbot.
 
+[![asciicast](https://asciinema.org/a/FFz470Z9vbA0ECNUviycPA72c.svg)](https://asciinema.org/a/FFz470Z9vbA0ECNUviycPA72c)
+
 ## Options
 
 ```
@@ -172,7 +174,7 @@ The example below will generate a request against the HB Server with values defi
 $ hb provision playbook-instances -d /tmp/playbook-instances/
 Using config file: /Users/doneill/.hb.yaml
 Using directory: /tmp/playbook-instances/
-Using files: [playbook-instances.yml]
+Using files: [playbook-instances.yml]asc
 Successfully updated 1 Device Groups
 Successfully committed Playbook Instances configuration
 ```
