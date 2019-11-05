@@ -16,7 +16,7 @@ type Authentication struct {
 	Password struct {
 		Password *string `json:"password"`
 		Username *string `json:"username"`
-	} `json:"password,omitempty"`
+	} `json:"password,omitempty" yaml:"password,omitempty"`
 }
 
 // IAgent - configure the NETCONF port
@@ -52,8 +52,8 @@ type Cisco struct {
 
 // Vendor - Configure the Vendor information
 type Vendor struct {
-	Juniper *Juniper `json:"juniper,omitempty"`
-	Cisco   *Cisco   `json:"cisco,omitempty"`
+	Juniper *Juniper `json:"juniper,omitempty" yaml:"juniper,omitempty"`
+	Cisco   *Cisco   `json:"cisco,omitempty" yaml:"cisco,omitempty"`
 }
 
 // Device - info needed to Register a Device in Healthbot

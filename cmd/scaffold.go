@@ -79,7 +79,7 @@ func scaffold(config Config, path string) {
 	}
 
 	// need to blank out the passwords
-	blankPassword := "CHANGEME"
+	blankPassword := "****"
 	for _, device := range devices.Device {
 		if device.Authentication != nil && device.Authentication.Password.Password != nil {
 			device.Authentication.Password.Password = &blankPassword

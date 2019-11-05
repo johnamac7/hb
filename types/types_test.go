@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
 // HelperLoadBytes allows you to use relative path testdata directory as a place
@@ -31,6 +32,12 @@ func TestDeviceYamlParsing(t *testing.T) {
 func TestDeviceOmit(t *testing.T) {
 	var devices Devices
 	_ = devices.Parse(HelperLoadBytes(t, "./devices/devices.yml"))
+	maxDevice, err := yaml.Marshal(devices.Device[0])
+	if err != nil {
+		assert.Nil(t, err, "Failed to marshal devices to json")
+	}
+	assert.NotContains(t, string(maxDevice), "cisco", "cisco should be ignored")
+
 	minDevice, err := json.Marshal(devices.Device[2])
 	if err != nil {
 		assert.Nil(t, err, "Failed to marshal devices to json")
