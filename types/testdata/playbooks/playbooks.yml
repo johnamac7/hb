@@ -1,0 +1,6 @@
+playbooks:
+- playbook-name: interface-status-test
+  description: None
+  rules: 
+  - interface.statistics/check-interface-status-based-on-interface-description-netconf
+  synopsis: None

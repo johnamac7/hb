@@ -84,3 +84,11 @@ func TestPlaybookInstanceYamlParsing(t *testing.T) {
 	assert.Len(t, playbookInstances.DeviceGroup, 1, "Expected to parse 1 Instances")
 	assert.EqualValues(t, "ptp-test-group", playbookInstances.DeviceGroup[0].DeviceGroupName, "Yaml type with a hyphen, didn't decode correctly")
 }
+
+func TestPlaybooksYamlParsing(t *testing.T) {
+	var playbooks Playbooks
+	err := playbooks.Parse(HelperLoadBytes(t, "./playbooks/playbooks.yml"))
+	assert.Nil(t, err, "Failed to parse yaml representation of Playbooks")
+	assert.Len(t, playbooks.Playbooks, 1, "Expected to parse 1 playbook")
+	assert.EqualValues(t, "interface-status-test", playbooks.Playbooks[0].PlayBookName, "Yaml type with a hyphen, didn't decode correctly")
+}
